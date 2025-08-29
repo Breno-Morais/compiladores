@@ -1,4 +1,7 @@
 %{
+    // Trabalho Etapa 1 - Compiladores
+    // Aluno: Breno da Silva Morais - 00335794
+
     #include "symbols.h"
     
     int running = 1;
@@ -39,7 +42,7 @@ false                                       { return LIT_FLASE; }
 
 [-,;:()\[\]{}=+*/%<>&|~]                    { return yytext[0]; }
 
-[a-zA-Z\-]+[0-9\-a-zA-Z_]*                  { return insertSymbolIntoTable(yytext, TK_IDENTIFIER); }
+[a-zA-Z\-_]+[0-9\-a-zA-Z_]*                  { return insertSymbolIntoTable(yytext, TK_IDENTIFIER); }
 
 [ \t]
 "\n"                                        { ++lineNumber; }

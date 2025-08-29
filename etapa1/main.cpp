@@ -1,3 +1,6 @@
+// Trabalho Etapa 1 - Compiladores
+// Aluno: Breno da Silva Morais - 00335794
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>

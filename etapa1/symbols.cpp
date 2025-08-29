@@ -1,3 +1,6 @@
+// Trabalho Etapa 1 - Compiladores
+// Aluno: Breno da Silva Morais - 00335794
+
 #include "symbols.h"
 
 #include <map>
@@ -52,7 +55,7 @@ std::ostream& operator<<(std::ostream& out, const SymbolType& value) {
 void printSymbolsTable() {
     std::cout << "Symbol Table:\n";
     for (const auto& entry : SymbolsTable) {
-        std::cout << "  Token: " << entry.first
-                  << ", Type: " << entry.second.type << std::endl;
+        std::cout << "  [" << entry.first
+                  << ", " << entry.second.type << "]\n";
     }
 }
