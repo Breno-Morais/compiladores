@@ -1,0 +1,176 @@
+%{
+    #include <stdio.h>
+    #include <string>
+
+    int yylex();
+    int getLineNumber(void);
+    void yyerror(std::string msg);
+%}
+
+%debug
+
+%token KW_CHAR
+%token KW_INT
+%token KW_FLOAT
+%token KW_BOOL
+
+%token KW_IF
+%token KW_ELSE
+%token KW_DO
+%token KW_WHILE
+%token KW_READ
+%token KW_PRINT
+%token KW_RETURN
+
+%token OPERATOR_LE
+%token OPERATOR_GE
+%token OPERATOR_EQ
+%token OPERATOR_DIF
+
+%token TK_IDENTIFIER
+
+%token LIT_INT
+%token LIT_CHAR
+%token LIT_FLOAT
+%token LIT_TRUE
+%token LIT_FLASE
+%token LIT_STRING
+
+%token TOKEN_ERROR
+
+%start program
+
+%left OPERATOR_EQ OPERATOR_DIF OPERATOR_GE OPERATOR_LE
+%left '+' '-'
+%left '<' '>'
+%left '*' '/'
+%left '='
+%left '|'
+%left '&'
+%left '~'
+
+%%
+
+program: decl
+    ;
+
+decl: dec decl
+    |
+    ;
+
+dec: decvar
+    | decfunc
+    ;
+
+decvar: types TK_IDENTIFIER '=' lits ';'
+    | types TK_IDENTIFIER '[' LIT_INT ']' vetinit ';'
+    ;
+
+types: KW_CHAR
+    | KW_INT
+    | KW_FLOAT
+    | KW_BOOL
+    ;
+
+lits: LIT_INT
+    | LIT_CHAR
+    | LIT_FLOAT
+    | LIT_TRUE
+    | LIT_FLASE
+    | LIT_STRING
+    ;
+
+vetinit : '=' vetl
+    |
+    ;
+
+vetl: lits vetl
+    |
+    ;
+
+decvarl: decvar decvarl
+    |
+    ;
+
+decfunc: types TK_IDENTIFIER '(' paraml ')' decvarl block
+    ;
+
+
+paraml: param paramtail
+    |
+    ;
+
+param: types TK_IDENTIFIER
+    ;
+
+paramtail: ',' param paramtail
+    |
+    ;
+
+block: '{' lcmd '}'
+    ;
+
+lcmd: cmd lcmd
+    |
+    ;
+
+cmd: TK_IDENTIFIER '=' expr ';'
+    | TK_IDENTIFIER '[' expr ']' '=' expr ';'
+    | KW_READ TK_IDENTIFIER ';'
+    | KW_PRINT printl
+    | KW_RETURN expr
+    | exprflux
+    | block
+    | ';'
+    ;
+
+printl: expr 
+    | expr printl
+    ;
+
+expr: expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '%' expr
+    | expr '<' expr
+    | expr '>' expr
+    | expr '=' expr
+    | expr '&' expr
+    | expr '|' expr
+    | expr OPERATOR_LE expr
+    | expr OPERATOR_GE expr
+    | expr OPERATOR_EQ expr
+    | expr OPERATOR_DIF expr
+    | '(' expr ')'
+    | '~' expr
+    | lits
+    | TK_IDENTIFIER
+    | TK_IDENTIFIER '[' expr ']'
+    | TK_IDENTIFIER '(' argl ')'
+    | TK_IDENTIFIER '(' ')'
+    ;
+
+argl: expr argtail
+    ;
+
+argtail: ',' expr argtail
+    |
+    ;
+
+exprflux: KW_IF '(' expr ')' cmd elseflux
+    | KW_WHILE expr cmd
+    | KW_DO cmd KW_WHILE expr ';'
+    ;
+
+elseflux: KW_ELSE cmd
+    |
+    ;
+
+%%
+
+void yyerror(std::string msg) {
+    extern char* yytext;
+    printf("Syntax error: %s at '%s', line %d\n", msg.c_str(), yytext, getLineNumber());
+    exit(3);
+}
