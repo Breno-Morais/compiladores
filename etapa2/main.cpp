@@ -1,4 +1,4 @@
-// Trabalho Etapa 1 - Compiladores
+// Trabalho Etapa 2 - Compiladores
 // Aluno: Breno da Silva Morais - 00335794
 
 #include <stdio.h>
@@ -69,7 +69,6 @@ int main(int argc, char **argv) {
         yyparse();
     }
 
-    printSymbolsTable();
-    printf("Main done! File has %d lines\n", getLineNumber());
+    printf("Parsing worked correctly! File has %d lines\n", getLineNumber());
     exit(0);
 }

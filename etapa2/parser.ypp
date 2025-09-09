@@ -1,4 +1,7 @@
 %{
+    // Trabalho Etapa 2 - Compiladores
+    // Aluno: Breno da Silva Morais - 00335794
+    
     #include <stdio.h>
     #include <string>
 
@@ -40,14 +43,14 @@
 
 %start program
 
-%left OPERATOR_EQ OPERATOR_DIF OPERATOR_GE OPERATOR_LE
-%left '+' '-'
-%left '<' '>'
-%left '*' '/'
-%left '='
 %left '|'
+%left '='
 %left '&'
 %left '~'
+%left '<' '>'
+%left OPERATOR_EQ OPERATOR_DIF OPERATOR_GE OPERATOR_LE
+%left '*' '/'
+%left '+' '-'
 
 %%
 
@@ -77,7 +80,6 @@ lits: LIT_INT
     | LIT_FLOAT
     | LIT_TRUE
     | LIT_FLASE
-    | LIT_STRING
     ;
 
 vetinit : '=' vetl
@@ -117,14 +119,16 @@ lcmd: cmd lcmd
 cmd: TK_IDENTIFIER '=' expr ';'
     | TK_IDENTIFIER '[' expr ']' '=' expr ';'
     | KW_READ TK_IDENTIFIER ';'
-    | KW_PRINT printl
-    | KW_RETURN expr
+    | KW_PRINT printl ';'
+    | KW_RETURN expr ';'
     | exprflux
     | block
     | ';'
     ;
 
 printl: expr 
+    | LIT_STRING
+    | LIT_STRING printl
     | expr printl
     ;
 

@@ -1,4 +1,4 @@
-// Trabalho Etapa 1 - Compiladores
+// Trabalho Etapa 2 - Compiladores
 // Aluno: Breno da Silva Morais - 00335794
 
 #include "symbols.h"
@@ -8,29 +8,13 @@
 
 std::map<std::string, Symbol> SymbolsTable;
 
-int insertSymbolIntoTable(char* text, int token) {
+void insertSymbolIntoTable(char* text, SymbolType token) {
     std::string symbol = std::string(text);
 
     if(SymbolsTable.find(symbol) != SymbolsTable.end())
-        return token;
+        return;
 
-    SymbolType type;
-    switch (token) {
-        case TK_IDENTIFIER:
-        case LIT_INT:
-        case LIT_CHAR:
-        case LIT_FLOAT:
-        case LIT_STRING:
-            type = static_cast<SymbolType>(token);
-            break;
-        
-        default:
-            return TOKEN_ERROR;
-            break;
-    }
-
-    SymbolsTable[symbol] = Symbol{type, symbol};
-    return token;
+    SymbolsTable[symbol] = Symbol{token, symbol};
 }
 
 static std::string getTypeString(const SymbolType& value) {

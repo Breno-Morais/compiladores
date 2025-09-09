@@ -67,6 +67,12 @@ int y = 1;
   else
     print "OK!\n"; 
   {{}} {}
+
+  if (y > 10)
+    print "";
+  else x = 10;
+
+  a = func("");
   }
 
 int incn (int p, int n )
