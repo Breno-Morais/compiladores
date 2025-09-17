@@ -1,0 +1,5 @@
+char a = 51;
+char b = 'x';
+char c = 100;
+int number = 'A';
+bool verdade = true;
