@@ -20,7 +20,6 @@ bool                                        { return KW_BOOL; }
 
 if                                          { return KW_IF; }
 else                                        { return KW_ELSE; }
-do                                          { return KW_DO; }
 while                                       { return KW_WHILE; }
 read                                        { return KW_READ; }
 print                                       { return KW_PRINT; }
@@ -34,15 +33,15 @@ false                                       { return LIT_FLASE; }
 "=="                                        { return OPERATOR_EQ; }
 "!="                                        { return OPERATOR_DIF; }
 
-[0-9]+                                      { insertSymbolIntoTable(yytext, SymbolType::Integer); return LIT_INT; }
-\'\\?.\'                                    { insertSymbolIntoTable(yytext, SymbolType::Char); return LIT_CHAR; }
-[0-9]+\.[0-9]+                              { insertSymbolIntoTable(yytext, SymbolType::Float); return LIT_FLOAT; }
+[0-9]+                                      { yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::Integer); return LIT_INT; }
+\'\\?.\'                                    { yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::Char); return LIT_CHAR; }
+[0-9]+\.[0-9]+                              { yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::Float); return LIT_FLOAT; }
 
-\"(\\.|[^\"\n\\])*\"                        { insertSymbolIntoTable(yytext, SymbolType::String); return LIT_STRING; }
+\"(\\.|[^\"\n\\])*\"                        { yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::String); return LIT_STRING; }
 
 [-,;:()\[\]{}=+*/%<>&|~]                    { return yytext[0]; }
 
-[a-zA-Z\-_]+[0-9\-a-zA-Z_]*                 { insertSymbolIntoTable(yytext, SymbolType::Identifier); return TK_IDENTIFIER; }
+[a-zA-Z\-_]+[0-9\-a-zA-Z_]*                 { yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::Identifier); return TK_IDENTIFIER; }
 
 [ \t\r]
 

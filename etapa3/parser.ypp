@@ -67,7 +67,7 @@ program: decl                                                       { root = new
     ;
 
 decl: dec decl                                                      { $$ = new ASTNode(ASTNodeType::DecList, {$1, $2}); }
-    |
+    |                                                               { $$ = nullptr; }
     ;
 
 dec: decvar                                                         { $$ = $1; }
@@ -84,11 +84,11 @@ types: KW_CHAR                                                      { $$ = new A
     | KW_BOOL                                                       { $$ = new ASTNode(ASTNodeType::TypeBool); }
     ;
 
-lits: LIT_INT                                                       { $$ = new ASTNode(ASTNodeType::LitInt, {}, $1); }
-    | LIT_CHAR                                                      { $$ = new ASTNode(ASTNodeType::LitChar, {}, $1); }
-    | LIT_FLOAT                                                     { $$ = new ASTNode(ASTNodeType::LitFloat, {}, $1); }
-    | LIT_TRUE                                                      { $$ = new ASTNode(ASTNodeType::LitTrue, {}, $1); }
-    | LIT_FLASE                                                     { $$ = new ASTNode(ASTNodeType::LitFalse, {}, $1); }
+lits: LIT_INT                                                       { $$ = new ASTNode(ASTNodeType::Lit, {}, $1); }
+    | LIT_CHAR                                                      { $$ = new ASTNode(ASTNodeType::Lit, {}, $1); }
+    | LIT_FLOAT                                                     { $$ = new ASTNode(ASTNodeType::Lit, {}, $1); }
+    | LIT_TRUE                                                      { $$ = new ASTNode(ASTNodeType::Lit, {}, $1); }
+    | LIT_FLASE                                                     { $$ = new ASTNode(ASTNodeType::Lit, {}, $1); }
     ;
 
 vetinit : '=' lits vetl                                             { $$ = new ASTNode(ASTNodeType::VetInit, {$2, $3}); }
@@ -157,7 +157,7 @@ expr: expr '+' expr                                                 { $$ = new A
     | '(' expr ')'                                                  { $$ = $2; }
     | '~' expr                                                      { $$ = new ASTNode(ASTNodeType::OpNot, {$2}); }
     | lits                                                          { $$ = $1; }
-    | TK_IDENTIFIER                                                 { $$ = $1; }
+    | TK_IDENTIFIER                                                 { $$ = new ASTNode(ASTNodeType::Identifier, {}, $1); }
     | TK_IDENTIFIER '[' expr ']'                                    { $$ = new ASTNode(ASTNodeType::ArrayElement, {$3}, $1); }
     | TK_IDENTIFIER '(' argl ')'                                    { $$ = new ASTNode(ASTNodeType::FuncCall, {$3}, $1); }
     | TK_IDENTIFIER '(' ')'                                         { $$ = new ASTNode(ASTNodeType::FuncCall, {}, $1); }

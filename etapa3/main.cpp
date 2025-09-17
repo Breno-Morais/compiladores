@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "symbols.h"
+#include "ast.h"
 
 int yylex(void);
 int yyparse(void);
@@ -14,6 +14,7 @@ int yyparse(void);
 extern FILE *yyin;
 extern char *yytext;
 extern int yydebug;
+extern ASTNode* root;
 
 int isRunning(void);
 void initMe(void);
@@ -69,6 +70,7 @@ int main(int argc, char **argv) {
         yyparse();
     }
 
+    root->print();
     printf("Parsing worked correctly! File has %d lines\n", getLineNumber());
     exit(0);
 }

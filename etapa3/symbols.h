@@ -19,7 +19,7 @@ struct Symbol {
     std::string content;
 };
 
-void insertSymbolIntoTable(char* text, SymbolType type);
+Symbol* insertSymbolIntoTable(char* text, SymbolType type);
 void printSymbolsTable();
 
 std::ostream& operator<<(std::ostream& out, const SymbolType& value);

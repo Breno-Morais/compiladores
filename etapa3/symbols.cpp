@@ -8,13 +8,14 @@
 
 std::map<std::string, Symbol> SymbolsTable;
 
-void insertSymbolIntoTable(char* text, SymbolType token) {
+Symbol* insertSymbolIntoTable(char* text, SymbolType token) {
     std::string symbol = std::string(text);
 
     if(SymbolsTable.find(symbol) != SymbolsTable.end())
-        return;
+        return nullptr;
 
     SymbolsTable[symbol] = Symbol{token, symbol};
+    return &SymbolsTable[symbol];
 }
 
 static std::string getTypeString(const SymbolType& value) {
