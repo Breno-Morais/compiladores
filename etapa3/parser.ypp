@@ -1,3 +1,8 @@
+%union {
+    Symbol* symbol;
+    ASTNode* ast;
+}
+
 %{
     // Trabalho Etapa 2 - Compiladores
     // Aluno: Breno da Silva Morais - 00335794
@@ -43,14 +48,14 @@
 
 %start program
 
-%left '|'
-%left '='
+%left '|' 
 %left '&'
-%left '~'
-%left '<' '>'
-%left OPERATOR_EQ OPERATOR_DIF OPERATOR_GE OPERATOR_LE
-%left '*' '/'
+%left OPERATOR_EQ OPERATOR_DIF
+%left OPERATOR_LE OPERATOR_GE '<' '>'
 %left '+' '-'
+%left '*' '/' '%'
+%right '~'      /* unary negation / bitwise not */
+%right '=' 
 
 %%
 
@@ -82,21 +87,16 @@ lits: LIT_INT
     | LIT_FLASE
     ;
 
-vetinit : '=' vetl
+vetinit : '=' lits vetl
     |
     ;
 
 vetl: lits vetl
     |
     ;
-
-decvarl: decvar decvarl
-    |
-    ;
-
+    
 decfunc: types TK_IDENTIFIER '(' paraml ')' decvarl block
     ;
-
 
 paraml: param paramtail
     |
@@ -106,6 +106,10 @@ param: types TK_IDENTIFIER
     ;
 
 paramtail: ',' param paramtail
+    |
+    ;
+
+decvarl: decvar decvarl
     |
     ;
 
