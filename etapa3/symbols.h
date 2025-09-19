@@ -10,6 +10,7 @@ enum class SymbolType: uint16_t {
     Char,
     Float,
     String,
+    Bool,
 };
 
 // still not sure if the map should have the content on the value, because it's always the same as the key, it feels redudant

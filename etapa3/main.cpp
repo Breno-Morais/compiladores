@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <iostream>
+
 #include "ast.h"
 
 int yylex(void);
@@ -71,6 +73,7 @@ int main(int argc, char **argv) {
     }
 
     root->print();
+    std::cout << "Program:\n" << root->generateCode() << '\n';
     printf("Parsing worked correctly! File has %d lines\n", getLineNumber());
     exit(0);
 }

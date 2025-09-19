@@ -11,8 +11,9 @@ std::map<std::string, Symbol> SymbolsTable;
 Symbol* insertSymbolIntoTable(char* text, SymbolType token) {
     std::string symbol = std::string(text);
 
-    if(SymbolsTable.find(symbol) != SymbolsTable.end())
-        return nullptr;
+    auto it = SymbolsTable.find(symbol);
+    if(it != SymbolsTable.end())
+        return &(it->second);
 
     SymbolsTable[symbol] = Symbol{token, symbol};
     return &SymbolsTable[symbol];

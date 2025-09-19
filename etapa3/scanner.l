@@ -25,8 +25,8 @@ read                                        { return KW_READ; }
 print                                       { return KW_PRINT; }
 return                                      { return KW_RETURN; }
 
-true                                        { return LIT_TRUE; }
-false                                       { return LIT_FLASE; }
+true                                        {  yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::Bool); return LIT_TRUE; }
+false                                       {  yylval.symbol = insertSymbolIntoTable(yytext, SymbolType::Bool); return LIT_FLASE; }
 
 "<="                                        { return OPERATOR_LE; }
 ">="                                        { return OPERATOR_GE; }

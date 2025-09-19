@@ -55,11 +55,11 @@ enum class ASTNodeType {
 };
 
 class ASTNode {
+    public:
     ASTNodeType type;
     std::vector<ASTNode*> children;
     Symbol* symbol; // only for leaf nodes
 
-    public:
         ASTNode(ASTNodeType type, std::vector<ASTNode*> children = {}, Symbol* symbol = nullptr)
             : type(type), symbol(symbol) {
                 this->children.reserve(children.size());
@@ -71,6 +71,7 @@ class ASTNode {
             }
 
         void print(const std::string& prefix = "", bool isLast = true) const;
+        std::string generateCode(int indent = 0) const;
 };
 
 std::ostream& operator<<(std::ostream& out, const ASTNodeType& value);
