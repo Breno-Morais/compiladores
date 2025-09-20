@@ -75,7 +75,7 @@ dec: decvar                                                         { $$ = $1; }
     ;
 
 decvar: types TK_IDENTIFIER '=' lits ';'                            { $$ = new ASTNode(ASTNodeType::DecVar, {$1, $4}, $2); }
-    | types TK_IDENTIFIER '[' LIT_INT ']' vetinit ';'               { $$ = new ASTNode(ASTNodeType::DecVarArray, {$1, $6}, $2); }
+    | types TK_IDENTIFIER '[' LIT_INT ']' vetinit ';'               { $$ = new ASTNode(ASTNodeType::DecVarArray, {$1, $6}, $2, $4); }
     ;
 
 types: KW_CHAR                                                      { $$ = new ASTNode(ASTNodeType::TypeChar); }
@@ -118,6 +118,7 @@ decvarl: decvar decvarl                                             { $$ = new A
     ;
 
 block: '{' lcmd '}'                                                 { $$ = new ASTNode(ASTNodeType::Block, {$2}); }
+    | '{' '}'                                                       { $$ = new ASTNode(ASTNodeType::EmptyBlock); }
     ;
 
 lcmd: cmd lcmd                                                      { $$ = new ASTNode(ASTNodeType::CmdList, {$1, $2}); }

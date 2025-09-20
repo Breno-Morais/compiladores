@@ -3,19 +3,9 @@ char a = 51;
 
 int v[10] = 'a' 0 'b' 0 0 0 0 0 0 0;
 
-/*
 int main ()
 int x = 1;
 int y = 1;
 {
-  number = 0;
-
-  print "Digite um numero: \n";
-  read number;
-
-  while (x<10)
-    {
-    x = x + 1;
-    print ".";
-    }
-}*/
+  v[1] = 2;
+}

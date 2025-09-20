@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <fstream>
 #include <iostream>
 
 #include "ast.h"
@@ -73,7 +74,12 @@ int main(int argc, char **argv) {
     }
 
     root->print();
-    std::cout << "Program:\n" << root->generateCode() << '\n';
+    if(argc >= 3) {
+        std::ofstream out(argv[2]);
+        out << root->generateCode();
+        out.close();
+    }
+
     printf("Parsing worked correctly! File has %d lines\n", getLineNumber());
     exit(0);
 }

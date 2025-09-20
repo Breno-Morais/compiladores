@@ -13,11 +13,7 @@ void ASTNode::print(const std::string& prefix, bool isLast) const {
         }
     }
 
-    std::cout << type;
-    if (symbol) {
-        std::cout << " [" << symbol->content << "]";
-    }
-    std::cout << "\n";
+    std::cout << type << (symbol ? "[" + symbol->content + "]": "") << (arraySize ? "[" + arraySize->content + "]": "") << "\n";
 
     for (size_t i = 0; i < children.size(); i++) {
         if(children[i] == nullptr)
@@ -32,124 +28,159 @@ std::string ASTNode::generateCode(int indent) const {
     auto ind = std::string(indent * 2, ' ');
 
     switch (type) {
-        // --- literals and identifiers ---
+        // === LITERALS & IDENTIFIERS ===
         case ASTNodeType::Identifier:
         case ASTNodeType::Lit:
             return symbol ? symbol->content : "";
 
-        // --- types ---
-        case ASTNodeType::TypeChar: return "char";
-        case ASTNodeType::TypeInt:  return "int";
-        case ASTNodeType::TypeFloat:return "float";
-        case ASTNodeType::TypeBool: return "bool";
+        // === TYPES ===
+        case ASTNodeType::TypeChar:  return "char";
+        case ASTNodeType::TypeInt:   return "int";
+        case ASTNodeType::TypeFloat: return "float";
+        case ASTNodeType::TypeBool:  return "bool";
 
-        // --- variable declarations ---
+        // === DECLARATIONS ===
         case ASTNodeType::DecVar:
             return ind + children[0]->generateCode() + " " + symbol->content +
                    " = " + children[1]->generateCode() + ";\n";
 
         case ASTNodeType::DecVarArray: {
             std::string init;
-            if (children.size() > 1) init = " = " + children[1]->generateCode();
+            if (children.size() > 1 && children[1]) init = " = " + children[1]->generateCode();
             return ind + children[0]->generateCode() + " " + symbol->content +
-                   "[" + /* size not in symbol, could be from symbol? */ "10" + "]" + init + ";\n";
+                   "[" + arraySize->content + "]" + init + ";\n";
         }
 
-        // --- vetinit recursive list ---
         case ASTNodeType::VetInit: {
             std::string code;
-            for (size_t i = 0; i < children.size(); i++) {
-                if (children[i]) {
-                    if (!code.empty()) code += " ";
-                    code += children[i]->generateCode();
-                }
-            }
-            return code;
-        }
-
-        // --- function declaration ---
-        case ASTNodeType::DecFunc: {
-            std::string params;
-            if (children.size() > 2) params = children[2]->generateCode();
-            return ind + children[0]->generateCode() + " " + symbol->content +
-                   " (" + params + ")\n" + children.back()->generateCode(indent);
-        }
-
-        // --- parameter list ---
-        case ASTNodeType::Param:
-            return children[0]->generateCode() + " " + symbol->content;
-        case ASTNodeType::ParamList: {
-            std::string code = children[0]->generateCode();
-            if (children.size() > 1) code += ", " + children[1]->generateCode();
-            return code;
-        }
-
-        // --- blocks and command lists ---
-        case ASTNodeType::Block: {
-            std::string code = ind + "{\n";
-            for (auto* c : children) code += c->generateCode(indent + 1);
-            code += ind + "}\n";
-            return code;
-        }
-        case ASTNodeType::CmdList: {
-            std::string code;
-            for (auto* c : children) code += c->generateCode(indent);
-            return code;
-        }
-
-        // --- commands ---
-        case ASTNodeType::CmdAssign:
-            return ind + symbol->content + " = " +
-                   children[0]->generateCode() + ";\n";
-        case ASTNodeType::CmdArrayElementAssign:
-            return ind + children[0]->generateCode() + " = " +
-                   children[1]->generateCode() + ";\n";
-        case ASTNodeType::CmdPrint:
-            return ind + "print " + children[0]->generateCode() + ";\n";
-        case ASTNodeType::CmdRead:
-            return ind + "read " + children[0]->generateCode() + ";\n";
-        case ASTNodeType::CmdReturn:
-            return ind + "return " + children[0]->generateCode() + ";\n";
-        case ASTNodeType::CmdIf:
-            return ind + "if (" + children[0]->generateCode() + ")\n" +
-                   children[1]->generateCode(indent + 1);
-        case ASTNodeType::CmdIfElse:
-            return ind + "if (" + children[0]->generateCode() + ")\n" +
-                   children[1]->generateCode(indent + 1) +
-                   ind + "else " + children[2]->generateCode(indent + 1);
-        case ASTNodeType::CmdWhile:
-            return ind + "while (" + children[0]->generateCode() + ")\n" +
-                   children[1]->generateCode(indent + 1);
-        case ASTNodeType::CmdEmpty:
-            return ind + ";\n";
-
-        // --- print list (concatenation) ---
-        case ASTNodeType::PrintList: {
-            std::string code;
-            for (auto* c : children) {
+            for (auto* c : children) if (c) {
                 if (!code.empty()) code += " ";
                 code += c->generateCode();
             }
-            if (symbol) {
+            return code;
+        }
+
+        case ASTNodeType::DecFunc: {
+            ASTNode* returnType = children[0];
+            ASTNode* param  = nullptr;
+            ASTNode* localVarDecs = nullptr;
+            ASTNode* block = nullptr;
+
+            for (size_t i = 1; i < children.size(); i++) {
+                switch (children[i]->type) {
+                    case ASTNodeType::ParamList:        
+                        param = children[i]; 
+                        break;
+
+                    case ASTNodeType::LocalVarDecList:  
+                        localVarDecs = children[i]; 
+                        break;
+
+                    case ASTNodeType::Block:            
+                        block = children[i]; 
+                        break;
+
+                    default: break;
+                }
+            }
+
+            return ind + returnType->generateCode() + " " + symbol->content +
+                   "(" + (param ? param->generateCode() : "") + ")\n" + 
+                   (localVarDecs ? localVarDecs->generateCode(indent + 1) : "") +
+                   (block ? block->generateCode(indent) : "");
+        }
+
+        case ASTNodeType::Param:
+            return children[0]->generateCode() + " " + symbol->content;
+
+        case ASTNodeType::ParamList: {
+            std::string left = children[0] ? children[0]->generateCode() : "";
+            std::string right = children[1] ? children[1]->generateCode() : "";
+            if (!left.empty() && !right.empty()) return left + ", " + right;
+            return left + right;
+        }
+
+        case ASTNodeType::LocalVarDecList: {
+            std::string code;
+            for (auto* c : children) if (c) code += c->generateCode(indent);
+            return code;
+        }
+
+        // === BLOCK ===
+        case ASTNodeType::Block: {
+            std::string code = ind + "{\n";
+            for (auto* c : children) if (c) code += c->generateCode(indent + 1);
+            code += ind + "}\n";
+            return code;
+        }
+        
+        case ASTNodeType::EmptyBlock:
+            return ind + "{ }\n";
+
+        // === COMMANDS  ===
+        case ASTNodeType::CmdList: {
+            std::string code;
+            for (auto* c : children) if (c) code += c->generateCode(indent);
+            return code;
+        }
+
+        case ASTNodeType::CmdAssign:
+            return ind + symbol->content + " = " + children[0]->generateCode() + ";\n";
+
+        case ASTNodeType::CmdArrayElementAssign:
+            return ind + symbol->content + "[" + children[0]->generateCode() + "] = " +
+                   children[1]->generateCode() + ";\n";
+
+        case ASTNodeType::CmdRead:
+            return ind + "read " + symbol->content + ";\n";
+
+        case ASTNodeType::CmdPrint:
+            return ind + "print " + children[0]->generateCode() + ";\n";
+
+        case ASTNodeType::CmdReturn:
+            return ind + "return " + children[0]->generateCode() + ";\n";
+
+        case ASTNodeType::CmdIf:
+            return ind + "if (" + children[0]->generateCode() + ")\n" +
+                   children[1]->generateCode(indent);
+
+        case ASTNodeType::CmdIfElse:
+            return ind + "if (" + children[0]->generateCode() + ")\n" +
+                   children[1]->generateCode(indent) +
+                   ind + "else \n" + children[2]->generateCode(indent + 1);
+
+        case ASTNodeType::CmdWhile:
+            return ind + "while (" + children[0]->generateCode() + ")\n" +
+                   children[1]->generateCode(indent);
+
+        case ASTNodeType::CmdEmpty:
+            return "";
+            // return ind + " ;\n";
+
+        // === PRINT LIST ===
+        case ASTNodeType::PrintList: {
+            std::string code;
+            if (symbol) code += symbol->content;
+            for (auto* c : children) if (c) {
                 if (!code.empty()) code += " ";
-                code += symbol->content;
+                code += c->generateCode();
             }
             return code;
         }
 
-        // --- function call ---
-        case ASTNodeType::FuncCall: {
-            std::string args;
-            if (!children.empty()) args = children[0]->generateCode();
-            return symbol->content + "(" + args + ")";
-        }
+        // === FUNCTION CALL ===
+        case ASTNodeType::FuncCall:
+            return symbol->content + "(" +
+                   (children.size() > 0 && children[0] ? children[0]->generateCode() : "") + ")";
+
         case ASTNodeType::ArgList: {
-            std::string code = children[0]->generateCode();
-            if (children.size() > 1) code += ", " + children[1]->generateCode();
-            return code;
+            std::string left = children[0] ? children[0]->generateCode() : "";
+            std::string right = children[1] ? children[1]->generateCode() : "";
+            if (!left.empty() && !right.empty()) return left + ", " + right;
+            return left + right;
         }
 
-        // --- operators ---
+        // === EXPRESSIONS ===
         case ASTNodeType::OpAdd: return children[0]->generateCode() + " + " + children[1]->generateCode();
         case ASTNodeType::OpSub: return children[0]->generateCode() + " - " + children[1]->generateCode();
         case ASTNodeType::OpMul: return children[0]->generateCode() + " * " + children[1]->generateCode();
@@ -164,12 +195,12 @@ std::string ASTNode::generateCode(int indent) const {
         case ASTNodeType::OpAnd: return children[0]->generateCode() + " & " + children[1]->generateCode();
         case ASTNodeType::OpOr: return children[0]->generateCode() + " | " + children[1]->generateCode();
         case ASTNodeType::OpAssign: return children[0]->generateCode() + " = " + children[1]->generateCode();
-        case ASTNodeType::OpNot: return "!" + children[0]->generateCode();
+        case ASTNodeType::OpNot: return "~" + children[0]->generateCode();
 
-        // --- top-level declarations ---
+        // === TOP LEVEL ===
         case ASTNodeType::DecList: {
             std::string code;
-            for (auto* c : children) code += c->generateCode(indent);
+            for (auto* c : children) if (c) code += c->generateCode(indent);
             return code;
         }
         case ASTNodeType::Program:

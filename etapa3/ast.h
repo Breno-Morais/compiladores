@@ -23,6 +23,7 @@ enum class ASTNodeType {
     Param,
     LocalVarDecList,
     Block,
+    EmptyBlock,
     CmdList,
     CmdAssign,
     CmdArrayElementAssign,
@@ -59,9 +60,10 @@ class ASTNode {
     ASTNodeType type;
     std::vector<ASTNode*> children;
     Symbol* symbol; // only for leaf nodes
+    Symbol* arraySize; // only for array declarations
 
-        ASTNode(ASTNodeType type, std::vector<ASTNode*> children = {}, Symbol* symbol = nullptr)
-            : type(type), symbol(symbol) {
+        ASTNode(ASTNodeType type, std::vector<ASTNode*> children = {}, Symbol* symbol = nullptr, Symbol* arraySize = nullptr)
+            : type(type), symbol(symbol), arraySize(arraySize) {
                 this->children.reserve(children.size());
                 for (auto* child : children) {
                     if (child != nullptr) {
