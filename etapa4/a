@@ -1,0 +1,12 @@
+char inc (int p, char n ) {
+	return p + n;
+}
+
+int creu() {
+	return 1;
+}
+
+bool main()
+int x[2] = 1 2; {
+	return (20 + 5) == (x[0] - x[1]);
+}

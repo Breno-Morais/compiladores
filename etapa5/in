@@ -1,0 +1,8 @@
+char a = 51;
+char b = 'x';
+char c = 100;
+int number = 'A';
+bool verdade = true;
+int v[10] = 'a' 0 'b' 0 0 2 0 0 0 0 0;
+int matrix[100]; 
+float num = 5.7;

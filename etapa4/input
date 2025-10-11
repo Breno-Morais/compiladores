@@ -25,9 +25,15 @@ de multiplas
 linhas
 */
 
+int incn (int p, int n )
+  {
+  return p + n;
+  }
+
 int main ()
 int x = 1;
 int y = 1;
+int f = 0;
   {
   number = 0;
   c = 7 - 1;
@@ -68,15 +74,10 @@ int y = 1;
     print "OK!\n"; 
 
   if (y > 10)
-    print f (5);
+    print f;
   else x = 10;
 
   //a = func("");
-  }
-
-int incn (int p, int n )
-  {
-  return p + n;
   }
 
 // end of file
