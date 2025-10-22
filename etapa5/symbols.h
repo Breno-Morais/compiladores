@@ -16,6 +16,8 @@ enum class SymbolType: uint16_t {
     VarId,
     VecId,
     FuncId,
+
+    Temp,
 };
 
 enum class DataType: uint8_t {
@@ -38,6 +40,8 @@ struct Symbol {
 Symbol* insertSymbolIntoTable(char* text, SymbolType type);
 Symbol* getSymbolFromTable(std::string cont);
 void printSymbolsTable();
+Symbol* makeTemp();
+Symbol* makeLabel();
 
 std::ostream& operator<<(std::ostream& out, const SymbolType& value);
 std::ostream& operator<<(std::ostream& out, const DataType& value);

@@ -51,12 +51,6 @@ std::string ASTNode::generateCode(int indent) const {
         case ASTNodeType::Lit:
             return symbol ? symbol->content : "";
 
-        // === TYPES ===
-        case ASTNodeType::TypeChar:  return "char";
-        case ASTNodeType::TypeInt:   return "int";
-        case ASTNodeType::TypeFloat: return "float";
-        case ASTNodeType::TypeBool:  return "bool";
-
         // === DECLARATIONS ===
         case ASTNodeType::DecVar:
             return ind + children[0]->generateCode() + " " + symbol->content +
@@ -237,10 +231,6 @@ static std::string getTypeString(const ASTNodeType& value) {
         ADD_NAME(ASTNodeType::DecList),
         ADD_NAME(ASTNodeType::DecVar),
         ADD_NAME(ASTNodeType::DecVarArray),
-        ADD_NAME(ASTNodeType::TypeChar),
-        ADD_NAME(ASTNodeType::TypeInt),
-        ADD_NAME(ASTNodeType::TypeFloat),
-        ADD_NAME(ASTNodeType::TypeBool),
         ADD_NAME(ASTNodeType::Lit),
         ADD_NAME(ASTNodeType::Identifier),
         ADD_NAME(ASTNodeType::VetInit),

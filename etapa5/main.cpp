@@ -9,7 +9,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "ast.h"
+#include "tacs.h"
 #include "semantic_check.h"
 
 int yylex(void);
@@ -46,6 +46,12 @@ int main(int argc, char **argv) {
         exit(4);
     }
 
-    std::cout << "No semantic errors found\n";
+    std::cout << "Anoted AST:\n";
+    root->print();
+    std::cout << "\n\n";
+
+    tacPrintList(generateCode(root));
+
+    fclose(yyin);
     exit(0);
 }

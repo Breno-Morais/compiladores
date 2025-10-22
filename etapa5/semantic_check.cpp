@@ -428,8 +428,5 @@ bool ASTSemErrorCheck(ASTNode* node) {
     if(!hasError)
         hasError |= checkTypes(node);
 
-    // std::cout << "Anoted AST:\n";
-    // node->print();
-
     return hasError;
 }

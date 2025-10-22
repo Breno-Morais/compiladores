@@ -1,12 +1,11 @@
-char inc (int p, char n ) {
-	return p + n;
-}
+char n = 'a';
 
-int creu() {
-	return 1;
-}
+char inc (int p) {
+	if(p == 1) {
+		n = p * p;
+	} else {
+		n = p - p;
+	}
 
-bool main()
-int x[2] = 1 2; {
-	return (20 + 5) == (x[0] - x[1]);
+	return p + 2 + n;
 }

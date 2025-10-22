@@ -101,7 +101,7 @@ bool checkDeclarions(ASTNode* node) {
             // Inherit type from symbol before checking the declaration just for compatibility with the cmds
             if(node->symbol) {
                 if(node->symbol->dataType == DataType::None) {
-                    // std::cout << "Symbol '" << node->symbol->content << "' has no data type\n";
+                    std::cout << "Symbol '" << node->symbol->content << "' has no data type\n";
                     hasError = true;
                 } else {
                     node->inferedType = node->symbol->dataType;
@@ -118,10 +118,10 @@ bool checkDeclarions(ASTNode* node) {
                 break;
             }
 
-            if(node->symbol->symType == SymbolType::Identifier) {
-                std::cout << "Symbol '" << node->symbol->content << "' has not been declared\n";
-                hasError = true;
-            }
+            // if(node->symbol->symType == SymbolType::Identifier) {
+            //     std::cout << "Symbol '" << node->symbol->content << "' has not been declared\n";
+            //     hasError = true;
+            // }
             
             break;
         }
@@ -358,6 +358,12 @@ bool checkTypes(ASTNode* node) {
         }
 
         case ASTNodeType::ArrayElement: {
+            if(node->symbol == nullptr || node->symbol->symType != SymbolType::VecId) {
+                std::cout << "Access to non-vector " << (node->symbol ? node->symbol->content : "") << "\n";
+                hasError = true;
+                break;
+            }
+
             if(!areCompatible(node->children[0]->inferedType, DataType::Int)) {
                 std::cout << "Array index is not integer type\n";
                 hasError = true;

@@ -14,11 +14,6 @@ enum class ASTNodeType {
     DecVar,
     DecVarArray,
 
-    TypeChar,
-    TypeInt,
-    TypeFloat,
-    TypeBool,
-
     Lit,
     Identifier,
     VetInit,
@@ -36,6 +31,7 @@ enum class ASTNodeType {
     CmdReturn,
     CmdEmpty,
     PrintList,
+
     OpAdd,
     OpSub,
     OpMul,
@@ -50,6 +46,7 @@ enum class ASTNodeType {
     OpGreaterEqual,
     OpEqual,
     OpNotEqual,
+    
     OpNot,
     ArrayElement,
     FuncCall,

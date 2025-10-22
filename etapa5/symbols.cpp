@@ -72,3 +72,15 @@ void printSymbolsTable() {
                   << ", " << entry.second.symType << "]\n";
     }
 }
+
+Symbol* makeTemp() {
+    static int tempCount = 0;
+    std::string tempName = "__temp" + std::to_string(tempCount++);
+    return insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Temp);
+}
+
+Symbol* makeLabel() {
+    static int tempCount = 0;
+    std::string tempName = "__label" + std::to_string(tempCount++);
+    return insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Temp);
+}
