@@ -25,7 +25,7 @@ void ASTNode::print(const std::string& prefix, bool isLast) const {
             for(size_t i = 0; i < symbol->params.size(); i++) {
                 if(i > 0)
                     std::cout << ", ";
-                std::cout << symbol->params[i];
+                std::cout << symbol->params[i]->dataType;
             }
             std::cout << ")]" << "\n";
         } else

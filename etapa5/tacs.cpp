@@ -26,7 +26,7 @@ void tacPrint(TAC* t) {
     if(!t) return;
     if(t->type == TACType::SYMBOL) return;
 
-    if(t->type != TACType::LABEL) std::cout << "    ";
+    if(t->type != TACType::LABEL) std::cout << "                ";
 
     std::cout << t->type << " ";
     if(t->res) std::cout << t->res->content << " ";
