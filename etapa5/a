@@ -1,11 +1,5 @@
 char n = 'a';
 
-char inc (int p) {
-	if(p == 1) {
-		n = p * p;
-	} else {
-		n = p - p;
-	}
-
-	return p + 2 + n;
+char inc (int p, int q) {
+	n = inc(5, 2 + 1);
 }

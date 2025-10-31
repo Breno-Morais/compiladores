@@ -34,7 +34,7 @@ struct Symbol {
     DataType dataType;
 
     //Used in functions
-    std::vector<DataType> paramTypes;
+    std::vector<Symbol*> params;
 };
 
 Symbol* insertSymbolIntoTable(char* text, SymbolType type);

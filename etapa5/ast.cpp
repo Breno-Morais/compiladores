@@ -20,12 +20,12 @@ void ASTNode::print(const std::string& prefix, bool isLast) const {
     }
 
     if(symbol)
-        if(symbol->paramTypes.size() > 0) {
+        if(symbol->params.size() > 0) {
             std::cout << " [" << symbol->content  << "(";
-            for(size_t i = 0; i < symbol->paramTypes.size(); i++) {
+            for(size_t i = 0; i < symbol->params.size(); i++) {
                 if(i > 0)
                     std::cout << ", ";
-                std::cout << symbol->paramTypes[i];
+                std::cout << symbol->params[i];
             }
             std::cout << ")]" << "\n";
         } else

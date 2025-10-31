@@ -38,10 +38,6 @@ enum class TACType {
     RET,	
     PRINT,	
     READ,
-
-    DECVAR,
-    DECVARARRAY,
-    DECARRAYINIT,
 };
 
 struct TAC {
@@ -61,7 +57,7 @@ void tacPrint(TAC* t);
 void tacPrintList(TAC* l);
 TAC* tacJoin(TAC* l1, TAC* l2);
 
-TAC* generateCode(ASTNode* root);
+TAC* generateCode(ASTNode* root, Symbol* funcContext = nullptr, int index = 0);
 
 std::ostream& operator<<(std::ostream& out, const TACType& value);
 

@@ -17,7 +17,7 @@ static bool areCompatible(const DataType& a, const DataType& b) {
 }
 
 // Top-Down pass to check declarations and uses of symbols
-bool checkDeclarions(ASTNode* node) {
+bool checkDeclarations(ASTNode* node) {
     if(node == nullptr)
         return false;
 
@@ -157,7 +157,7 @@ bool checkDeclarions(ASTNode* node) {
             if(node->children[0]->type == ASTNodeType::ParamList) {
                 ASTNode* paramList = nullptr;
                 for(paramList = node->children[0]; paramList != nullptr; paramList = paramList->children[1]) {
-                    node->symbol->paramTypes.push_back(paramList->children[0]->symbol->dataType);
+                    node->symbol->params.push_back(paramList->children[0]->symbol);
                 }
             }
 
@@ -173,7 +173,7 @@ bool checkDeclarions(ASTNode* node) {
 
     for (size_t i = 0; i < node->children.size(); i++)
     {
-        hasError |= checkDeclarions(node->children[i]);
+        hasError |= checkDeclarations(node->children[i]);
     }
 
     return hasError;
@@ -378,12 +378,12 @@ bool checkTypes(ASTNode* node) {
 
             if(node->children.size() > 0)
                 for(argList = node->children[0]; argList != nullptr; argList = argList->children[1]) {
-                    if(paramCount >= node->symbol->paramTypes.size()) {
+                    if(paramCount >= node->symbol->params.size()) {
                         std::cout << "Too many arguments in function call: " << node->symbol->content << '\n';
                         return true;
                     }
 
-                    if(!areCompatible(node->symbol->paramTypes[paramCount], argList->children[0]->inferedType)) {
+                    if(!areCompatible(node->symbol->params[paramCount]->dataType, argList->children[0]->inferedType)) {
                         std::cout << "Argument type not compatible in function call: " << node->symbol->content << '\n';
                         return true;
                     }
@@ -391,7 +391,7 @@ bool checkTypes(ASTNode* node) {
                     paramCount++;
                 }
 
-            if(paramCount < node->symbol->paramTypes.size()) {
+            if(paramCount < node->symbol->params.size()) {
                 std::cout << "Too few arguments in function call: " << node->symbol->content << '\n';
                 hasError = true;
             }
@@ -423,7 +423,7 @@ bool checkTypes(ASTNode* node) {
 bool ASTSemErrorCheck(ASTNode* node) {
     bool hasError = false;
 
-    hasError |= checkDeclarions(node);
+    hasError |= checkDeclarations(node);
 
     if(!hasError)
         hasError |= checkTypes(node);

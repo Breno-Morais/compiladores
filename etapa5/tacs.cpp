@@ -57,7 +57,7 @@ TAC* tacJoin(TAC* l1, TAC* l2) {
     return l2;
 }
 
-TAC* generateCode(ASTNode* root) {
+TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
     if(!root) return 0;
 
     TAC* code[std::max(static_cast<int>(root->children.size()), 4)];
@@ -69,7 +69,11 @@ TAC* generateCode(ASTNode* root) {
     }
 
     for(size_t i = 0; i < root->children.size(); i++) {
-        code[i] = generateCode(root->children[i]);
+        code[i] = generateCode(
+            root->children[i], 
+            (root->type == ASTNodeType::FuncCall) ? root->symbol: funcContext, 
+            (root->type == ASTNodeType::ArgList) ? index + 1: index
+        );
     }
 
     switch(root->type) {
@@ -77,21 +81,9 @@ TAC* generateCode(ASTNode* root) {
             std::cout << "Unknown AST Node in TAC Generation\n";
             break;
 
-        case ASTNodeType::DecVar:
-            result = new TAC(TACType::DECVAR, root->symbol, code[0] ? code[0]->res : nullptr);
-            break;
-
-        case ASTNodeType::DecVarArray:
-            result = tacJoin( code[1] , new TAC(TACType::DECVARARRAY, root->symbol, code[1] ? code[1]->res : nullptr));
-            break;
-
         case ASTNodeType::Lit:
         case ASTNodeType::Identifier:
             result = new TAC(TACType::SYMBOL, root->symbol);
-            break;
-
-        case ASTNodeType::VetInit:
-            result = tacJoin( code[1], new TAC(TACType::DECARRAYINIT,  code[0] ? code[0]->res : nullptr));
             break;
 
         case ASTNodeType::DecFunc:
@@ -99,12 +91,15 @@ TAC* generateCode(ASTNode* root) {
             // Maybe doesn't work because there is trash on the list
             break;
 
-        case ASTNodeType::Param:
-            result = new TAC(TACType::DECVAR, root->symbol);
-            break;
-
         case ASTNodeType::CmdAssign:
-            result =  tacJoin( code[0], new TAC(TACType::MOVE, root->symbol, code[0] ? code[0]->res : nullptr));
+            if(code[0]) {
+                if(code[0]->type == TACType::SYMBOL)
+                    result = tacJoin( code[0], new TAC(TACType::MOVE, root->symbol, code[0]->res));
+                else {
+                    code[0]->res = root->symbol;
+                    result = code[0];
+            }}
+
             break;
 
         case ASTNodeType::CmdArrayElementAssign:
@@ -165,7 +160,7 @@ TAC* generateCode(ASTNode* root) {
         case ASTNodeType::ArgList:
             result = tacJoin(tacJoin(
                     code[0],
-                    new TAC(TACType::ARG, code[0]->res)),
+                    new TAC(TACType::ARG, funcContext, code[0]->res, funcContext->params[index])),
                     code[1]
                 );
                 
@@ -253,9 +248,6 @@ static std::string getTACTypeString(const TACType& value) {
         {TACType::RET, "RET"},	
         {TACType::PRINT, "PRINT"},	
         {TACType::READ, "READ"},
-        {TACType::DECVAR, "DECVAR"},
-        {TACType::DECVARARRAY, "DECVARARRAY"},
-        {TACType::DECARRAYINIT, "DECARRAYINIT"},
     };
     #undef ADD_NAME
     auto it = result.find(value);
