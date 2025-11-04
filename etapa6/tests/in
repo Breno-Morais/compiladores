@@ -1,0 +1,12 @@
+// char a = 51;
+// char b = 'x';
+// char c = 100;
+// int number = 'A';
+// bool verdade = true;
+// int v[3] = 'a' 0 'b';
+// int matrix[100]; 
+// float num = 5.7;
+
+int main() {
+    print 'A' 'B' 'C';
+}

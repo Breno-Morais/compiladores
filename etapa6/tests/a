@@ -1,0 +1,5 @@
+char n = 'a';
+
+char inc (int p, int q) {
+	n = inc(5, 2 + 1);
+}
