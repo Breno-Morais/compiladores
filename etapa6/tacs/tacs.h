@@ -1,8 +1,8 @@
 #ifndef TACS_H
 #define TACS_H
 
-#include "symbols.h"
-#include "ast.h"
+#include "../symbols/symbols.h"
+#include "../ast/ast.h"
 
 enum class TACType {
     // OPS

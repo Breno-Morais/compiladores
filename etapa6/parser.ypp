@@ -2,7 +2,7 @@
     // Trabalho Etapa 2 - Compiladores
     // Aluno: Breno da Silva Morais - 00335794
     
-    #include "tacs.h"
+    #include "./tacs/tacs.h"
     #include <stdio.h>
     #include <string>
 

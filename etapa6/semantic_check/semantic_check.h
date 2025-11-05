@@ -1,7 +1,7 @@
 #ifndef SEM_CHEQ
 #define SEM_CHEQ
 
-#include "ast.h"
+#include "../ast/ast.h"
 
 // Declaration
 // Use of Id

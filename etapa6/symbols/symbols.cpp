@@ -35,6 +35,11 @@ static std::string getSTypeString(const SymbolType& value) {
         ADD_NAME(SymbolType::Char),
         ADD_NAME(SymbolType::Float),
         ADD_NAME(SymbolType::String),
+        ADD_NAME(SymbolType::Bool),
+        ADD_NAME(SymbolType::VarId),
+        ADD_NAME(SymbolType::VecId),
+        ADD_NAME(SymbolType::FuncId),
+        ADD_NAME(SymbolType::Temp),
     };
     #undef ADD_NAME
     auto it = result.find(value);

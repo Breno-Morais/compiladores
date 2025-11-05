@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++11 -Wall -g
 
 target: etapa6
 
-etapa6: symbols.o ast.o tacs.o semantic_check.o lex.yy.o main.o parser.tab.o
+etapa6: symbols/symbols.o ast/ast.o tacs/tacs.o semantic_check/semantic_check.o lex.yy.o main.o parser.tab.o
 	$(CXX) symbols.o ast.o tacs.o semantic_check.o lex.yy.o main.o parser.tab.o -o etapa6
 
 %.o: %.cpp 

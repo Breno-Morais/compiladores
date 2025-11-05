@@ -2,7 +2,7 @@
     // Trabalho Etapa 2 - Compiladores
     // Aluno: Breno da Silva Morais - 00335794
 
-    #include "ast.h"
+    #include "./ast/ast.h"
     #include "parser.tab.hpp"
     
     int running = 1;

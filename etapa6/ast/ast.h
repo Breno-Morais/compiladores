@@ -1,7 +1,7 @@
 #ifndef COMP_AST
 #define COMP_AST
 
-#include "symbols.h"
+#include "../symbols/symbols.h"
 #include <vector>
 #include <string>
 

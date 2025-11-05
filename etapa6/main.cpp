@@ -9,8 +9,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "tacs.h"
-#include "semantic_check.h"
+#include "./tacs/tacs.h"
+#include "./semantic_check/semantic_check.h"
 
 int yylex(void);
 int yyparse(void);
@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
         exit(4);
     }
 
+    printSymbolsTable();
     tacPrintList(generateCode(root));
 
     fclose(yyin);
