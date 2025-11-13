@@ -1,10 +1,12 @@
 	.file	"a.c"
 	.text
-	.section	.rodata
-.LC0:
-	.string	"1"
-.LC1:
-	.string	"2"
+	.globl	x
+	.data
+	.align 4
+	.type	x, @object
+	.size	x, 4
+x:
+	.long	6
 	.text
 	.globl	main
 	.type	main, @function
@@ -12,12 +14,29 @@ main:
 	endbr64
 	pushq	%rbp
 	movq	%rsp, %rbp
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	puts@PLT
-	leaq	.LC1(%rip), %rax
-	movq	%rax, %rdi
-	call	puts@PLT
+	movl	x(%rip), %edx
+	movl	x(%rip), %eax
+	imull	%edx, %eax
+	movl	%eax, x(%rip)
 	movl	$0, %eax
 	popq	%rbp
 	ret
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:

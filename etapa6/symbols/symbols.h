@@ -4,6 +4,9 @@
 #include <string>
 #include <stdint.h>
 #include <vector>
+#include <map>
+
+class ASTNode;
 
 enum class SymbolType: uint16_t {
     Identifier,
@@ -32,6 +35,10 @@ struct Symbol {
     SymbolType symType;
     std::string content;
     DataType dataType;
+    std::string label;
+    
+    // Used by variables, points to their initial value (LIT)
+    ASTNode* value;
 
     //Used in functions
     std::vector<Symbol*> params;
@@ -39,9 +46,11 @@ struct Symbol {
 
 Symbol* insertSymbolIntoTable(char* text, SymbolType type);
 Symbol* getSymbolFromTable(std::string cont);
+std::map<std::string, Symbol>& getSymbolTable();
 void printSymbolsTable();
 Symbol* makeTemp();
 Symbol* makeLabel();
+void removeFromSymbolTable(std::string text);
 
 std::ostream& operator<<(std::ostream& out, const SymbolType& value);
 std::ostream& operator<<(std::ostream& out, const DataType& value);

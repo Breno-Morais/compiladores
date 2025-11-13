@@ -3,7 +3,6 @@
 
 #include "symbols.h"
 
-#include <map>
 #include <iostream>
 
 std::map<std::string, Symbol> SymbolsTable;
@@ -88,4 +87,12 @@ Symbol* makeLabel() {
     static int tempCount = 0;
     std::string tempName = "__label" + std::to_string(tempCount++);
     return insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Temp);
+}
+
+std::map<std::string, Symbol>& getSymbolTable() {
+    return SymbolsTable;
+}
+
+void removeFromSymbolTable(std::string text) {
+    SymbolsTable.erase(text);
 }

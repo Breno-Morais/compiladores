@@ -11,6 +11,7 @@
 
 #include "./tacs/tacs.h"
 #include "./semantic_check/semantic_check.h"
+#include "./asm/asm.h"
 
 int yylex(void);
 int yyparse(void);
@@ -47,7 +48,18 @@ int main(int argc, char **argv) {
     }
 
     printSymbolsTable();
+    std::cout << "\n\n";
     tacPrintList(generateCode(root));
+
+    // root->print();
+
+    if(argc >= 3) {
+        std::ofstream out(argv[2]);
+        out << generateAsm(generateCode(root));
+        out.close();
+    }
+
+    // std::cout << "\n\nASM:\n\n" << generateAsm(generateCode(root));
 
     fclose(yyin);
     exit(0);

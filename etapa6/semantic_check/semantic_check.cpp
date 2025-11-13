@@ -199,12 +199,17 @@ bool checkTypes(ASTNode* node) {
             if(node->children.size() > 0)
             hasError |= !areCompatible(node->symbol->dataType, node->children[0]->inferedType);
 
+            node->symbol->value = node->children[0];
+            node->children[0]->symbol->value = node; // Used to check if the value is used for the dec or somewhere else
+
             break;
         }
 
         case ASTNodeType::DecVarArray: {
             if(node->children.size() > 1)
                 hasError |= !areCompatible(node->symbol->dataType, node->children[1]->inferedType);
+
+            node->symbol->value = node;
 
             break;
         }

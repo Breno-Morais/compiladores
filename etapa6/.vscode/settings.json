@@ -47,6 +47,9 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "fstream": "cpp",
-        "a": "cpp"
+        "a": "cpp",
+        "input": "cpp",
+        "cstring": "cpp",
+        "sstream": "cpp"
     }
 }

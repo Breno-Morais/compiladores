@@ -56,6 +56,7 @@ struct TAC {
 void tacPrint(TAC* t);
 void tacPrintList(TAC* l);
 TAC* tacJoin(TAC* l1, TAC* l2);
+void removeAllTacSymbols(TAC* eL);
 
 TAC* generateCode(ASTNode* root, Symbol* funcContext = nullptr, int index = 0);
 

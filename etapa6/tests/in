@@ -7,6 +7,9 @@
 // int matrix[100]; 
 // float num = 5.7;
 
+// float a = 1.0;
+int x = 10;
+
 int main() {
-    print 'A' 'B' 'C';
+    print x + 2 * 2;
 }

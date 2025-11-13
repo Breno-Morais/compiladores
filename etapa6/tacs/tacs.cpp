@@ -24,7 +24,7 @@ std::map<ASTNodeType, TACType> ASTtoTAC = {
 
 void tacPrint(TAC* t) {
     if(!t) return;
-    if(t->type == TACType::SYMBOL) return;
+    // if(t->type == TACType::SYMBOL) return;
 
     if(t->type != TACType::LABEL) std::cout << "                ";
 
@@ -213,6 +213,8 @@ TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
             break;
     }
 
+    removeAllTacSymbols(result);
+
     return result;
 }
 
@@ -258,3 +260,20 @@ static std::string getTACTypeString(const TACType& value) {
 std::ostream& operator<<(std::ostream& out, const TACType& value) {
     return out << getTACTypeString(value);
 };
+
+/* eL: End of list*/
+void removeAllTacSymbols(TAC* eL) {
+    if(!eL) return;
+
+    for(TAC* cur = eL; cur != nullptr; cur = cur->prev) {
+        if(cur->type == TACType::SYMBOL) {
+            if(cur->next)
+                cur->next->prev = cur->prev;
+
+            if(cur->prev)
+                cur->prev->next = cur->next;
+        }
+    }
+
+    // Talvez tenha um memory leak mas a vida é assim mesmo
+}
