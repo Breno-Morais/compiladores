@@ -124,6 +124,16 @@ TAC* goToTopTAC(TAC* code) {
     return cur;
 }
 
+std::string beforeCmpAsm(TAC* code) {
+    return "\tmovl\t" + symbolToAsm(code->op2) + ", %eax\n"
+            "\tcmpl\t" + symbolToAsm(code->op1) + ", %eax\n";
+}
+             
+std::string afterCmpAsm(TAC* code) {
+    return "\tmovzbl\t%al, %eax\n"
+           "\tmovl\t%eax, " + code->res->content + "(%rip)\n";;
+}
+
 std::string generateAsm(TAC* code) {
     std::ostringstream oss;
 
@@ -221,13 +231,18 @@ std::string generateAsm(TAC* code) {
 
     /// Print helpful strings
     oss <<  "\n._print_s:\n"
-            "\t.string	\"%s\\n\"\n";
+            "\t.string\t\"%s\\n\"\n";
     oss <<  "._print_d:\n"
-            "\t.string	\"%d\\n\"\n";
+            "\t.string\t\"%d\\n\"\n";
     oss <<  "._print_c:\n"
-            "\t.string	\"%c\\n\"\n";
+            "\t.string\t\"%c\\n\"\n";
     oss <<  "._print_f:\n"
-            "\t.string	\"%f\\n\"\n\n";
+            "\t.string\t\"%f\\n\"\n\n";
+
+    oss << ".true:\n"
+        "\t.string\t\"true\"\n"
+        ".false:\n"
+        "\t.string\t\"false\"\n\n";
 
     // Go back to the top
     code = goToTopTAC(code);
@@ -321,22 +336,52 @@ std::string generateAsm(TAC* code) {
                 break;
             }
     // DIV,
-    // ASSIGN,
     // MOD,
-    // LESS,
-    // GREATER,
+            case TACType::LESS: {
+                oss << beforeCmpAsm(code);
+                oss << "\tsetg\t%al\n";
+                oss << afterCmpAsm(code);
+
+                break;
+            }
+
+            case TACType::GREATER: {
+                oss << beforeCmpAsm(code);
+                oss << "\tsetl\t%al\n";
+                oss << afterCmpAsm(code);
+
+                break;
+            }
+
+            case TACType::LESSEQUAL: {
+                oss << beforeCmpAsm(code);
+                oss << "\tsetge\t%al\n";
+                oss << afterCmpAsm(code);
+
+                break;
+            }
+
+            case TACType::GREATEREQUAL: {
+                oss << beforeCmpAsm(code);
+                oss << "\tsetle\t%al\n";
+                oss << afterCmpAsm(code);
+
+                break;
+            }
+            
     // AND,
     // OR,
-    // LESSEQUAL,
-    // GREATEREQUAL,
     // EQUAL,
     // NOTEQUAL,
 
     // NOT,
 
-    // SYMBOL,	
-    // VECACCESS,	
-    // MOVE,	
+    // VECACCESS,
+            case TACType::MOVE: {
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", " << code->res->content << "(%rip)\n";
+
+                break;
+            }
     // MOVEVEC,	
     // LABEL,	
     // IFZ,	
@@ -345,6 +390,27 @@ std::string generateAsm(TAC* code) {
     // ARG,	
     // READ,
             case TACType::PRINT: {
+                if(code->res->dataType == DataType::Bool) {
+                    std::string labelPrint1 = ".L" + std::to_string(LCcounter);
+                    LCcounter++;
+                    std::string labelPrint2 = ".L" + std::to_string(LCcounter);
+                    LCcounter++;
+
+                    oss <<
+                    "\tmovzbl\t" << symbolToAsm(code->res) << ", %eax\n"
+                    "\ttestb\t%al, %al\n"
+                    "\tje\t" << labelPrint1 << "\n"
+                    "\tleaq\t.true(%rip), %rax\n"
+                    "\tjmp\t" << labelPrint2 << "\n"
+                    << labelPrint1 << ":\n"
+                    "\tleaq\t.false(%rip), %rax\n"
+                    << labelPrint2 << ":\n"
+                    "\tmovq\t%rax, %rdi\n"
+                    "\tcall\tputs@PLT\n";
+
+                    break;
+                }
+
                 oss << "\tmovl\t" << symbolToAsm(code->res) << ", %esi\n";
 
                 oss << "\tleaq\t._print_";
@@ -360,6 +426,12 @@ std::string generateAsm(TAC* code) {
 
                     case DataType::Real:
                         oss << "f";
+                        break;
+
+                    case DataType::None:
+                        if(code->res->symType == SymbolType::String)
+                            oss << "s";
+
                         break;
                     
                     default:

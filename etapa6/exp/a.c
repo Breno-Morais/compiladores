@@ -3,7 +3,7 @@
 // char* vasco() {
 //     return "are you";
 // }
-int x = 6;
+char x = 1;
 
 int main() {
     // printf("seguro\n");
@@ -12,7 +12,7 @@ int main() {
     // printf("%d\n", x);
     // printf("%.2f\n", 5.12345);
 
-    x = x * x;
+    printf("%s\n", (x) ? "true" : "false");
 }
 
 // gcc -S a.c -fno-asynchronous-unwind-tables -fno-dwarf2-cfi-asm

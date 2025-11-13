@@ -10,7 +10,6 @@ enum class TACType {
     SUB,
     MUL,
     DIV,
-    ASSIGN,
     MOD,
     LESS,
     GREATER,

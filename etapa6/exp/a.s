@@ -2,11 +2,15 @@
 	.text
 	.globl	x
 	.data
-	.align 4
 	.type	x, @object
-	.size	x, 4
+	.size	x, 1
 x:
-	.long	6
+	.byte	1
+	.section	.rodata
+.LC0:
+	.string	"true"
+.LC1:
+	.string	"false"
 	.text
 	.globl	main
 	.type	main, @function
@@ -14,10 +18,16 @@ main:
 	endbr64
 	pushq	%rbp
 	movq	%rsp, %rbp
-	movl	x(%rip), %edx
-	movl	x(%rip), %eax
-	imull	%edx, %eax
-	movl	%eax, x(%rip)
+	movzbl	x(%rip), %eax
+	testb	%al, %al
+	je	.L2
+	leaq	.LC0(%rip), %rax
+	jmp	.L3
+.L2:
+	leaq	.LC1(%rip), %rax
+.L3:
+	movq	%rax, %rdi
+	call	puts@PLT
 	movl	$0, %eax
 	popq	%rbp
 	ret
