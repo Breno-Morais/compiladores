@@ -52,6 +52,7 @@
         "cstring": "cpp",
         "sstream": "cpp",
         "in": "c",
-        "log_op_tests": "c"
+        "log_op_tests": "c",
+        "cassert": "cpp"
     }
 }

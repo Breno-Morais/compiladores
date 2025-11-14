@@ -1,18 +1,10 @@
 int x = 5;
-int y = 2;
-
-int A() {
-    print "A\n";
-    return 'A';
-}
-
-int B() {
-    print "B\n";
-    return 'B';
-}
+int y = 0;
 
 int main() {
-    x = A();
-    print "main\n";
-    y = B();
+    read x;
+
+    y = x + 1;
+
+    print y;
 }

@@ -1,11 +1,5 @@
 	.text
 	.section	.data
-.LC0:
-	.string "A\n"
-.LC1:
-	.string "B\n"
-.LC2:
-	.string "main\n"
 	.globl	__temp0
 	.align 4
 	.type	__temp0, @object
@@ -20,20 +14,6 @@ __temp0:
 __temp1:
 	.long	0
 
-	.globl	__temp2
-	.align 4
-	.type	__temp2, @object
-	.size	__temp2, 4
-__temp2:
-	.long	0
-
-	.globl	__temp3
-	.align 4
-	.type	__temp3, @object
-	.size	__temp3, 4
-__temp3:
-	.long	0
-
 	.globl	x
 	.align 4
 	.type	x, @object
@@ -45,7 +25,8 @@ x:
 	.type	y, @object
 	.size	y, 4
 y:
-	.long	2
+	.long	0
+	.section	.rodata
 
 ._print_s:
 	.string	"%s"
@@ -62,33 +43,8 @@ y:
 	.string	"false"
 
 	.text
-	.globl	A
-	.type	A, @function
-A:
-	endbr64
-	pushq	%rbp
-	movq	%rsp, %rbp
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$65, %eax
-	popq	%rbp
-	ret
-	.size	A, .-A
-	.text
-	.globl	B
-	.type	B, @function
-B:
-	endbr64
-	pushq	%rbp
-	movq	%rsp, %rbp
-	leaq	.LC1(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$66, %eax
-	popq	%rbp
-	ret
-	.size	B, .-B
+
+# BEGINFUN
 	.text
 	.globl	main
 	.type	main, @function
@@ -96,13 +52,28 @@ main:
 	endbr64
 	pushq	%rbp
 	movq	%rsp, %rbp
-	call	A
-	movl	%eax, x(%rip)
-	leaq	.LC2(%rip), %rax
+
+# READ
+	leaq	x(%rip), %rax
+	movq	%rax, %rsi
+	leaq	._print_d(%rip), %rax
 	movq	%rax, %rdi
-	call	printf@PLT
-	call	B
+	movl	$0, %eax
+	call	__isoc99_scanf@PLT
+
+# ADD
+	movl	$1, %edx
+	addl	%edx, %eax
 	movl	%eax, y(%rip)
+
+# PRINT
+	movl	y(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# ENDFUN
 	popq	%rbp
 	ret
 	.size	main, .-main

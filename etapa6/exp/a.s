@@ -1,58 +1,63 @@
-	.file	"a.c"
 	.text
+	.section	.data
+	.globl	__temp0
+	.align 4
+	.type	__temp0, @object
+	.size	__temp0, 4
+__temp0:
+	.long	0
+
+	.globl	__temp1
+	.align 4
+	.type	__temp1, @object
+	.size	__temp1, 4
+__temp1:
+	.long	0
+
 	.globl	x
-	.data
 	.align 4
 	.type	x, @object
 	.size	x, 4
 x:
-	.long	1
+	.long	5
 	.globl	y
 	.align 4
 	.type	y, @object
 	.size	y, 4
 y:
-	.long	1
-	.globl	z
-	.align 4
-	.type	z, @object
-	.size	z, 4
-z:
-	.long	1
+	.long	0
+	.section	.rodata
+
+._print_s:
+	.string	"%s"
+._print_d:
+	.string	"%d"
+._print_c:
+	.string	"%c"
+._print_f:
+	.string	"%f"
+
+.true:
+	.string	"true"
+.false:
+	.string	"false"
+
 	.text
-	.globl	A
-	.type	A, @function
-A:
-	endbr64
-	pushq	%rbp
-	movq	%rsp, %rbp
-	movl	$65, %eax
-	popq	%rbp
-	ret
-	.size	A, .-A
-	.globl	B
-	.type	B, @function
-B:
-	endbr64
-	pushq	%rbp
-	movq	%rsp, %rbp
-	movl	$66, %eax
-	popq	%rbp
-	ret
-	.size	B, .-B
 	.globl	main
 	.type	main, @function
 main:
 	endbr64
 	pushq	%rbp
 	movq	%rsp, %rbp
-	movl	$0, %eax
-	call	A
-	movl	%eax, x(%rip)
-	movl	$0, %eax
-	call	B
+	movl	$5, %eax
+	movl	$1, %edx
+	addl	%edx, %eax
 	movl	%eax, y(%rip)
+	movl	y(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
 	movl	$0, %eax
+	call	printf@PLT
 	popq	%rbp
 	ret
 	.size	main, .-main
