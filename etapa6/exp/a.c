@@ -7,15 +7,20 @@ int x = 1;
 int y = 1;
 int z = 1;
 
-int main() {
-    z = x && y;
-    // printf("seguro\n");
-    // printf("%c\n", 'a');
-    // printf("%d\n", 5);
-    // printf("%d\n", x);
-    // printf("%.2f\n", 5.12345);
+int A() {
+    // print "A\n";
+    return 65;
+}
 
-    // printf("%s\n", (x) ? "true" : "false");
+int B() {
+    // print "B\n";
+    return 66;
+}
+
+int main() {
+    x = A();
+    // print "main\n";
+    y = B();
 }
 
 // gcc -S a.c -fno-asynchronous-unwind-tables -fno-dwarf2-cfi-asm

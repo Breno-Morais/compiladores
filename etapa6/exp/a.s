@@ -20,24 +20,38 @@ y:
 z:
 	.long	1
 	.text
+	.globl	A
+	.type	A, @function
+A:
+	endbr64
+	pushq	%rbp
+	movq	%rsp, %rbp
+	movl	$65, %eax
+	popq	%rbp
+	ret
+	.size	A, .-A
+	.globl	B
+	.type	B, @function
+B:
+	endbr64
+	pushq	%rbp
+	movq	%rsp, %rbp
+	movl	$66, %eax
+	popq	%rbp
+	ret
+	.size	B, .-B
 	.globl	main
 	.type	main, @function
 main:
 	endbr64
 	pushq	%rbp
 	movq	%rsp, %rbp
-	movl	x(%rip), %eax
-	testl	%eax, %eax
-	je	.L2
-	movl	y(%rip), %eax
-	testl	%eax, %eax
-	je	.L2
-	movl	$1, %eax
-	jmp	.L3
-.L2:
 	movl	$0, %eax
-.L3:
-	movl	%eax, z(%rip)
+	call	A
+	movl	%eax, x(%rip)
+	movl	$0, %eax
+	call	B
+	movl	%eax, y(%rip)
 	movl	$0, %eax
 	popq	%rbp
 	ret

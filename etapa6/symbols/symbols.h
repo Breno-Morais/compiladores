@@ -21,6 +21,7 @@ enum class SymbolType: uint16_t {
     FuncId,
 
     Temp,
+    Label,
 };
 
 enum class DataType: uint8_t {

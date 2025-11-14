@@ -274,6 +274,7 @@ std::string generateAsm(TAC* code) {
 
                 break;
             }
+            
             case TACType::SUB: {
                 // oss << "\n; TAC SUB\n";
 
@@ -335,8 +336,29 @@ std::string generateAsm(TAC* code) {
 
                 break;
             }
-    // DIV,
-    // MOD,
+
+            case TACType::DIV: {
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+                "\tmovl\t" << symbolToAsm(code->op2) << ", %ecx\n"
+                "\tcltd\n"
+                "\tidivl\t%ecx\n"
+                "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+
+                break;
+            }
+
+            case TACType::MOD: {
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+                "\tmovl\t" << symbolToAsm(code->op2) << ", %esi\n"
+                "\tcltd\n"
+                "\tidivl\t%esi\n"
+                "\tmovl\t%edx, %ecx\n"
+                "\tmovl\t%ecx, %eax\n"
+                "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+
+                break;
+            }
+
             case TACType::LESS: {
                 oss << beforeCmpAsm(code);
                 oss << "\tsetg\t%al\n";
@@ -449,12 +471,38 @@ std::string generateAsm(TAC* code) {
                 break;
             }
     // MOVEVEC,	
-    // LABEL,	
-    // IFZ,	
-    // JUMP,	
+
+            case TACType::LABEL: {
+                oss << code->res->content << ":\n";
+
+                break;
+            }
+
+            case TACType::IFZ: {
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+                "\ttestl\t%eax, %eax\n"
+                "\tjz\t" << code->res->content << "\n";
+
+                break;
+            }
+
+            case TACType::JUMP: {
+                oss << "\tjmp\t" << code->res->content << "\n";
+
+                break;
+            }
+
     // CALL,	
+            case TACType::CALL: {
+                // TODO: Needs to add the parameters shit
+                oss << "\tcall\t" << code->op1->content << "\n"
+                "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+
+                break;
+            }
     // ARG,	
     // READ,
+
             case TACType::PRINT: {
                 if(code->res->dataType == DataType::Bool) {
                     std::string labelPrint1 = ".L" + std::to_string(LCcounter);

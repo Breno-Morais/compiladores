@@ -86,7 +86,7 @@ Symbol* makeTemp() {
 Symbol* makeLabel() {
     static int tempCount = 0;
     std::string tempName = "__label" + std::to_string(tempCount++);
-    return insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Temp);
+    return insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Label);
 }
 
 std::map<std::string, Symbol*>& getSymbolTable() {
