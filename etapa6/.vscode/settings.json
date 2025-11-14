@@ -53,6 +53,7 @@
         "sstream": "cpp",
         "in": "c",
         "log_op_tests": "c",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "unordered_set": "cpp"
     }
 }

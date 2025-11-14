@@ -7,6 +7,24 @@ std::map<DataType, std::string> dataSizeTable = {
     {DataType::Real, "4"},
 };
 
+const std::unordered_set<TACType> reusableResEax = {
+    TACType::ADD,
+    TACType::SUB,
+    TACType::MUL,
+    TACType::DIV,
+    TACType::MOD,
+    TACType::LESS,
+    TACType::GREATER,
+    TACType::LESSEQUAL,
+    TACType::GREATEREQUAL,
+    TACType::EQUAL,
+    TACType::NOTEQUAL,
+    TACType::AND,
+    TACType::OR,
+    TACType::NOT,
+    TACType::CALL  // call leaves its return value in %eax
+};
+
 // --- Utility Functions ---
 std::string symbolToAsm(Symbol* sym) {
     std::string res;

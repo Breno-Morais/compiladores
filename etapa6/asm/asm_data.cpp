@@ -165,7 +165,8 @@ std::string convertToAsm(const std::string& valueString, DataType dataType) {
 };
 
 void generateFileEpilogue(std::ostringstream& oss) {
-    oss <<  "\t.ident\t\"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\"\n"
+    oss <<  "\n# FILE SECURITY DETAIL\n"
+            "\t.ident\t\"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\"\n"
             "\t.section\t.note.GNU-stack,\"\",@progbits\n"
             "\t.section\t.note.gnu.property,\"a\"\n"
             "\t.align 8\n"

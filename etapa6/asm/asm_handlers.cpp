@@ -10,23 +10,25 @@ static void print_OriginalTAC(std::ostringstream& oss, TAC* code) {
 void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruction) {
     print_OriginalTAC(oss, code);
 
-    // 1. Handle op1 (Load into %eax)
+    // Handle op1 (Load into %eax)
     // We check if the previous instruction's result is *our* op1.
-    bool op1_already_in_eax = (code->prev && code->prev->res == code->op1);
+    bool op1_already_in_eax =  (code->prev && 
+                                reusableResEax.count(code->prev->type) && 
+                                code->prev->res == code->op1);
 
     if (!op1_already_in_eax) {
         // If not, we must load it.
         oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n";
     }
 
-    // 2. Handle op2 (Load into %edx)
+    // Handle op2 (Load into %edx)
     // No optimization for op2, just load it.
     oss << "\tmovl\t" << symbolToAsm(code->op2) << ", %edx\n";
 
-    // 3. Perform the operation
-    oss << "\t" << instruction << "\t%edx, %eax\n"; // e.g., "addl %edx, %eax"
+    // Perform the operation
+    oss << "\t" << instruction << "\t%edx, %eax\n";
 
-    // 4. Handle the result (Store from %eax)
+    // Handle the result (Store from %eax)
     // We check if the *next* instruction *uses* our result as op1.
     bool res_used_by_next = (code->next && 
                              (code->next->op1 == code->res || 
@@ -41,23 +43,26 @@ void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruc
 void handle_Mul(std::ostringstream& oss, TAC* code) {
     print_OriginalTAC(oss, code);
 
-    // Your constant-folding optimization is good.
     if (code->op1->symType == SymbolType::Integer && code->op2->symType == SymbolType::Integer) {
         oss << "\tmovl\t$" << (std::stoi(code->op1->content) * std::stoi(code->op2->content)) 
-            << ", " << getAsmDestination(code->res) << "\n";
+            <<  ", %eax\n"
+                "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
     } 
+    
     // Case 1: op1 is constant
     else if (code->op1->symType == SymbolType::Integer) {
         oss << "\tmovl\t" << symbolToAsm(code->op2) << ", %eax\n"
             "\timull\t" << symbolToAsm(code->op1) << ", %eax, %eax\n"
             "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
     }
+    
     // Case 2: op2 is constant (imull is commutative)
     else if (code->op2->symType == SymbolType::Integer) {
         oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\timull\t" << symbolToAsm(code->op2) << ", %eax, %eax\n"
             "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
     }
+    
     // Case 3: Neither is constant
     else {
         oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"

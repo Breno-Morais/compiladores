@@ -2,9 +2,5 @@ int x = 5;
 int y = 0;
 
 int main() {
-    read x;
-
-    y = x + 1;
-
-    print y;
+    print (1 + 12 - 23 / 2 * 155)"\n";
 }

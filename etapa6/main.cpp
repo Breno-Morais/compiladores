@@ -53,11 +53,21 @@ int main(int argc, char **argv) {
 
     // root->print();
 
-    if(argc >= 3) {
-        std::ofstream out(argv[2]);
-        out << generateAsm(generateCode(root));
-        out.close();
+    std::string output_filename;
+    if (argc >= 3) {
+        output_filename = argv[2];
+    } else {
+        output_filename = std::string(argv[1]) + ".s";
     }
+
+    std::ofstream out(output_filename);
+    if (!out.is_open()) {
+        std::cerr << "Error: Could not open output file " << output_filename << std::endl;
+        return 1;
+    }
+
+    out << generateAsm(generateCode(root));
+    out.close();
 
     // std::cout << "\n\nASM:\n\n" << generateAsm(generateCode(root));
 
