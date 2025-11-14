@@ -5,23 +5,23 @@
 
 #include <iostream>
 
-std::map<std::string, Symbol> SymbolsTable;
+std::map<std::string, Symbol*> SymbolsTable;
 
 Symbol* insertSymbolIntoTable(char* text, SymbolType token) {
     std::string symbol = std::string(text);
 
     auto it = SymbolsTable.find(symbol);
     if(it != SymbolsTable.end())
-        return &(it->second);
+        return it->second;
 
-    SymbolsTable[symbol] = Symbol{token, symbol};
-    return &SymbolsTable[symbol];
+    SymbolsTable[symbol] = new Symbol{token, symbol};
+    return SymbolsTable[symbol];
 }
 
 Symbol* getSymbolFromTable(std::string cont) {
     auto it = SymbolsTable.find(cont);
     if(it != SymbolsTable.end())
-        return &(it->second);
+        return it->second;
     
     return nullptr;
 }
@@ -73,7 +73,7 @@ void printSymbolsTable() {
     std::cout << "Symbol Table:\n";
     for (const auto& entry : SymbolsTable) {
         std::cout << "  [" << entry.first
-                  << ", " << entry.second.symType << "]\n";
+                  << ", " << entry.second->symType << "]\n";
     }
 }
 
@@ -89,7 +89,7 @@ Symbol* makeLabel() {
     return insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Temp);
 }
 
-std::map<std::string, Symbol>& getSymbolTable() {
+std::map<std::string, Symbol*>& getSymbolTable() {
     return SymbolsTable;
 }
 

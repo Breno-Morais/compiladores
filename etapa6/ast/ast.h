@@ -73,6 +73,11 @@ class ASTNode {
                         child->parent = this;
                     }
                 }
+
+                if(symbol != nullptr) {
+                    Symbol* x = getSymbolFromTable(symbol->content);
+                    std::cout << x;
+                }
                 
                 if(symbol != nullptr && datatype != DataType::None) {
                     symbol->dataType = datatype;

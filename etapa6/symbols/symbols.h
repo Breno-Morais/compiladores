@@ -46,7 +46,7 @@ struct Symbol {
 
 Symbol* insertSymbolIntoTable(char* text, SymbolType type);
 Symbol* getSymbolFromTable(std::string cont);
-std::map<std::string, Symbol>& getSymbolTable();
+std::map<std::string, Symbol*>& getSymbolTable();
 void printSymbolsTable();
 Symbol* makeTemp();
 Symbol* makeLabel();

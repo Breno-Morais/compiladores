@@ -21,6 +21,45 @@ std::map<ASTNodeType, TACType> ASTtoTAC = {
     {ASTNodeType::OpNotEqual, TACType::NOTEQUAL},
 };
 
+std::map<TACType, DataType> tacDefaultType = {
+    {TACType::ADD, DataType::Int },
+    {TACType::SUB, DataType::Int },
+    {TACType::MUL, DataType::Int },
+    {TACType::DIV, DataType::Int },
+    {TACType::MOD, DataType::Int },
+    {TACType::LESS, DataType::Bool },
+    {TACType::GREATER, DataType::Bool },
+    {TACType::AND, DataType::Bool },
+    {TACType::OR, DataType::Bool },
+    {TACType::LESSEQUAL, DataType::Bool },
+    {TACType::GREATEREQUAL, DataType::Bool },
+    {TACType::EQUAL, DataType::Bool },
+    {TACType::NOTEQUAL, DataType::Bool },
+    {TACType::NOT, DataType::Bool },
+    {TACType::SYMBOL, DataType::None },	
+    {TACType::VECACCESS, DataType::None },	
+    {TACType::MOVE, DataType::None },	
+    {TACType::MOVEVEC, DataType::None },	
+    {TACType::LABEL, DataType::None },	
+    {TACType::BEGINFUN, DataType::None },	
+    {TACType::ENDFUN, DataType::None },	
+    {TACType::IFZ, DataType::None },	
+    {TACType::JUMP, DataType::None },	
+    {TACType::CALL, DataType::None },	
+    {TACType::ARG, DataType::None },	
+    {TACType::RET, DataType::None },	
+    {TACType::PRINT, DataType::None },	
+    {TACType::READ, DataType::None },
+};
+
+TAC::TAC(TACType type, Symbol* res, Symbol* op1, Symbol* op2)
+            : type(type), res(res), op1(op1), op2(op2), prev(nullptr), next(nullptr) {
+                prev=next=nullptr;
+
+                if(res && res->dataType == DataType::None)
+                    res->dataType = tacDefaultType[type];
+            }
+
 void tacPrint(TAC* t) {
     if(!t) return;
     // if(t->type == TACType::SYMBOL) return;
@@ -115,11 +154,11 @@ TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
 
         case ASTNodeType::PrintList:
             result = tacJoin(tacJoin(tacJoin(
-                            code[1], 
-                            code[0]),
-                            root->symbol ? new TAC(TACType::PRINT, root->symbol) : nullptr),
-                            code[0] ? new TAC(TACType::PRINT, code[0]->res) : nullptr
-                        );
+                root->symbol ? new TAC(TACType::PRINT, root->symbol) : nullptr,
+                code[0]),
+                (code[0] && code[0]->type != TACType::PRINT) ? new TAC(TACType::PRINT, code[0]->res) : nullptr),
+                code[1]
+                );
 
             break;
 

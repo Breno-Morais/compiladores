@@ -143,18 +143,18 @@ std::string generateAsm(TAC* code) {
     auto symbolTable = getSymbolTable();
     int LCcounter = 0;
 
-    std::map<std::string, Symbol>::iterator it;
+    std::map<std::string, Symbol*>::iterator it;
 
     // Print asm of the variables and constants
     for (it = symbolTable.begin(); it != symbolTable.end(); it++) {
-        Symbol& symbol = it->second;
+        Symbol* symbol = it->second;
 
-        switch (symbol.symType) {
+        switch (symbol->symType) {
             case SymbolType::String:{ 
-                symbol.label = ".LC" + std::to_string(LCcounter);
+                symbol->label = ".LC" + std::to_string(LCcounter);
 
-                oss << symbol.label + ":\n" <<
-                    "\t.string " << symbol.content << "\n";
+                oss << symbol->label + ":\n" <<
+                    "\t.string " << symbol->content << "\n";
 
                 LCcounter++;
                 break;
@@ -163,61 +163,61 @@ std::string generateAsm(TAC* code) {
             case SymbolType::Temp: {
                 // TODO: Add types to Temp
 
-                oss << "\t.globl\t" << symbol.content << "\n"
+                oss << "\t.globl\t" << symbol->content << "\n"
                 "\t.align 4\n"
-                "\t.type\t" << symbol.content << ", @object\n"
-                "\t.size\t" << symbol.content << ", 4\n"
-                << symbol.content << ":\n\t.long\t0\n\n";
+                "\t.type\t" << symbol->content << ", @object\n"
+                "\t.size\t" << symbol->content << ", 4\n"
+                << symbol->content << ":\n\t.long\t0\n\n";
 
                 break;
             }
 
             case SymbolType::VarId: {
-                if(!symbol.value)
+                if(!symbol->value)
                     break;
 
-                std::string size = dataSizeTable[symbol.dataType];
+                std::string size = dataSizeTable[symbol->dataType];
 
-                oss << "\t.globl\t" << symbol.content << "\n"
+                oss << "\t.globl\t" << symbol->content << "\n"
                 "\t.align 4\n"
-                "\t.type\t" << symbol.content << ", @object\n"
-                "\t.size\t" << symbol.content << ", " << size << "\n"
-                << symbol.content << ":\n"
-                << convertToAsm(symbol.value->symbol->content, symbol.value->symbol->dataType);
+                "\t.type\t" << symbol->content << ", @object\n"
+                "\t.size\t" << symbol->content << ", " << size << "\n"
+                << symbol->content << ":\n"
+                << convertToAsm(symbol->value->symbol->content, symbol->value->symbol->dataType);
 
                 break;
             }
 
             case SymbolType::VecId: {
-                if(!symbol.value)
+                if(!symbol->value)
                     break;
 
-                oss << "\t.globl\t" << symbol.content << "\n"
+                oss << "\t.globl\t" << symbol->content << "\n"
                 "\t.align 16\n"
-                "\t.type\t" << symbol.content << ", @object\n"
-                "\t.size\t" << symbol.content << ", 20\n"
-                << symbol.content << ":\n";
+                "\t.type\t" << symbol->content << ", @object\n"
+                "\t.size\t" << symbol->content << ", 20\n"
+                << symbol->content << ":\n";
 
-                if(symbol.value->type != ASTNodeType::DecVarArray)
+                if(symbol->value->type != ASTNodeType::DecVarArray)
                     break;
 
                 // TODO: Talvez não der certo porque o char teria o tamanho byte enquanto que o int tem long
-                if(symbol.value->children[1])
-                    for(ASTNode* node = symbol.value->children[1]; node != nullptr; node = node->children[1]) {
+                if(symbol->value->children[1])
+                    for(ASTNode* node = symbol->value->children[1]; node != nullptr; node = node->children[1]) {
                         if(node->children[0] && node->children[0]->symbol)
                         oss << convertToAsm(node->children[0]->symbol->content, node->children[0]->symbol->dataType);
                     }
-                else if(symbol.value->children[0])
-                    oss << "\t.zero " << symbol.value->children[0]->symbol->content << "\n"; // TODO: Checa se o tamanho é só int ou não
+                else if(symbol->value->children[0])
+                    oss << "\t.zero " << symbol->value->children[0]->symbol->content << "\n"; // TODO: Checa se o tamanho é só int ou não
 
                 break;
             }
 
             case SymbolType::Float: {
-                if(symbol.value == nullptr) {
-                    symbol.label = ".LC" + std::to_string(LCcounter);
+                if(symbol->value == nullptr) {
+                    symbol->label = ".LC" + std::to_string(LCcounter);
 
-                    oss << symbol.label + ":\n" << convertToAsm(symbol.content, DataType::Real);
+                    oss << symbol->label + ":\n" << convertToAsm(symbol->content, DataType::Real);
 
                     LCcounter++;
                 }
@@ -231,13 +231,13 @@ std::string generateAsm(TAC* code) {
 
     /// Print helpful strings
     oss <<  "\n._print_s:\n"
-            "\t.string\t\"%s\\n\"\n";
+            "\t.string\t\"%s\"\n";
     oss <<  "._print_d:\n"
-            "\t.string\t\"%d\\n\"\n";
+            "\t.string\t\"%d\"\n";
     oss <<  "._print_c:\n"
-            "\t.string\t\"%c\\n\"\n";
+            "\t.string\t\"%c\"\n";
     oss <<  "._print_f:\n"
-            "\t.string\t\"%f\\n\"\n\n";
+            "\t.string\t\"%f\"\n\n";
 
     oss << ".true:\n"
         "\t.string\t\"true\"\n"
@@ -406,8 +406,16 @@ std::string generateAsm(TAC* code) {
                     "\tleaq\t.false(%rip), %rax\n"
                     << labelPrint2 << ":\n"
                     "\tmovq\t%rax, %rdi\n"
-                    "\tcall\tputs@PLT\n";
+                    "\tcall\tprintf@PLT\n";
 
+                    break;
+                }
+
+                if(code->res->symType == SymbolType::String) {
+                    oss <<
+                    "\tleaq\t" << symbolToAsm(code->res) << ", %rax\n"
+                    "\tmovq\t%rax, %rdi\n"
+                    "\tcall\tprintf@PLT\n";
                     break;
                 }
 
@@ -428,12 +436,6 @@ std::string generateAsm(TAC* code) {
                         oss << "f";
                         break;
 
-                    case DataType::None:
-                        if(code->res->symType == SymbolType::String)
-                            oss << "s";
-
-                        break;
-                    
                     default:
                         oss << "d";
                         break;

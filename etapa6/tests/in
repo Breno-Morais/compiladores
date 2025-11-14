@@ -8,19 +8,21 @@
 // float num = 5.7;
 
 // float a = 1.0;
-int x = 10;
-bool y = false;
 
 int main() {
-    y = 50 < 40;
-    print "less" y;
+    print "less 2 < 1 is " (2 < 1 ) "\n";
+    print "less 1 < 1 is " (1 < 1 ) "\n";
+    print "less 1 < 2 is " (1 < 2 ) "\n";
 
-    y = 50 > 40;
-    print "greater" y;
+    print "greater 2 > 1 is " (2 > 1 ) "\n";
+    print "greater 1 > 1 is " (1 > 1 ) "\n";
+    print "greater 1 > 2 is " (1 > 2 ) "\n";
 
-    y = 50 >= 50;
-    print "greater equal" y;
-    
-    y = 50 <= 40;
-    print "less equal" y;
+    print "greater or equal 2 >= 1 is " (2 >= 1 ) "\n";
+    print "greater or equal 1 >= 1 is " (1 >= 1 ) "\n";
+    print "greater or equal 1 >= 2 is " (1 >= 2 ) "\n";
+
+    print "less or equal 2 <= 1 is " (2 <= 1 ) "\n";
+    print "less or equal 1 <= 1 is " (1 <= 1 ) "\n";
+    print "less or equal 1 <= 2 is " (1 <= 2 ) "\n";
 }

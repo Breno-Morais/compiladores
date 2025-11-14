@@ -3,16 +3,17 @@
 // char* vasco() {
 //     return "are you";
 // }
-char x = 1;
+// char x = 1;
 
 int main() {
+    // char y = x && 5;
     // printf("seguro\n");
     // printf("%c\n", 'a');
     // printf("%d\n", 5);
     // printf("%d\n", x);
     // printf("%.2f\n", 5.12345);
 
-    printf("%s\n", (x) ? "true" : "false");
+    // printf("%s\n", (x) ? "true" : "false");
 }
 
 // gcc -S a.c -fno-asynchronous-unwind-tables -fno-dwarf2-cfi-asm

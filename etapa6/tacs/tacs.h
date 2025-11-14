@@ -4,6 +4,8 @@
 #include "../symbols/symbols.h"
 #include "../ast/ast.h"
 
+#include <map>
+
 enum class TACType {
     // OPS
     ADD,
@@ -48,8 +50,7 @@ struct TAC {
         TAC* prev;
         TAC* next;
 
-        TAC(TACType type, Symbol* res = nullptr, Symbol* op1 = nullptr, Symbol* op2 = nullptr)
-            : type(type), res(res), op1(op1), op2(op2), prev(nullptr), next(nullptr) {prev=next=nullptr; }
+        TAC(TACType type, Symbol* res = nullptr, Symbol* op1 = nullptr, Symbol* op2 = nullptr);
 };
 
 void tacPrint(TAC* t);
