@@ -369,12 +369,78 @@ std::string generateAsm(TAC* code) {
                 break;
             }
             
-    // AND,
-    // OR,
-    // EQUAL,
-    // NOTEQUAL,
+            case TACType::AND: {
+                std::string labelPrint1 = ".L" + std::to_string(LCcounter);
+                LCcounter++;
+                std::string labelPrint2 = ".L" + std::to_string(LCcounter);
+                LCcounter++;
 
-    // NOT,
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+                "\ttestl\t%eax, %eax\n"
+                "\tje\t" << labelPrint1 << "\n"
+                "\tmovl\t" << symbolToAsm(code->op2) << ", %eax\n"
+                "\ttestl\t%eax, %eax\n"
+                "\tje\t" << labelPrint1 << "\n"
+                "\tmovl\t$1, %eax\n"
+                "\tjmp\t" << labelPrint2 << "\n" <<
+                labelPrint1 << ":\n"
+                "\tmovl\t$0, %eax\n" <<
+                labelPrint2 << ":\n"
+                "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+
+                break;
+            }
+
+            case TACType::OR: {
+                std::string labelPrint1 = ".L" + std::to_string(LCcounter);
+                LCcounter++;
+                std::string labelPrint2 = ".L" + std::to_string(LCcounter);
+                LCcounter++;
+                std::string labelPrint3 = ".L" + std::to_string(LCcounter);
+                LCcounter++;
+
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+                "\ttestl\t%eax, %eax\n"
+                "\tjne\t" << labelPrint1 << "\n"
+                "\tmovl\t" << symbolToAsm(code->op2) << ", %eax\n"
+                "\ttestl\t%eax, %eax\n"
+                "\tje\t" << labelPrint2 << "\n"
+                "" << labelPrint1 << ":\n"
+                "\tmovl\t$1, %eax\n"
+                "\tjmp\t" << labelPrint3 << "\n"
+                "" << labelPrint2 << ":\n"
+                "\tmovl\t$0, %eax\n"
+                "" << labelPrint3 << ":\n"
+                "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+
+                break;
+            }
+
+            case TACType::EQUAL: {
+                oss << beforeCmpAsm(code);
+                oss << "\tsete\t%al\n";
+                oss << afterCmpAsm(code);
+
+                break;
+            }
+
+            case TACType::NOTEQUAL: {
+                oss << beforeCmpAsm(code);
+                oss << "\tsetne\t%al\n";
+                oss << afterCmpAsm(code);
+
+                break;
+            }
+
+            case TACType::NOT: {
+                oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+                "\ttestl\t%eax, %eax\n"
+                "\tsete\t%al\n"
+                "\tmovzbl\t%al, %eax\n"
+                "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+
+                break;
+            }
 
     // VECACCESS,
             case TACType::MOVE: {

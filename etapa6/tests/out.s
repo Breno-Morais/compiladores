@@ -1,31 +1,29 @@
 	.text
 	.section	.data
 .LC0:
-	.string "\n"
+	.string "0 == 0 is "
 .LC1:
-	.string "greater 1 > 1 is "
+	.string "1 == 0 is "
 .LC2:
-	.string "greater 1 > 2 is "
+	.string "1 == 1 is "
 .LC3:
-	.string "greater 2 > 1 is "
+	.string "\n"
 .LC4:
-	.string "greater or equal 1 >= 1 is "
+	.string "false & false is "
 .LC5:
-	.string "greater or equal 1 >= 2 is "
+	.string "false | false is "
 .LC6:
-	.string "greater or equal 2 >= 1 is "
+	.string "true & false is "
 .LC7:
-	.string "less 1 < 1 is "
+	.string "true & true is "
 .LC8:
-	.string "less 1 < 2 is "
+	.string "true | false is "
 .LC9:
-	.string "less 2 < 1 is "
+	.string "true | true is "
 .LC10:
-	.string "less or equal 1 <= 1 is "
+	.string "~false is "
 .LC11:
-	.string "less or equal 1 <= 2 is "
-.LC12:
-	.string "less or equal 2 <= 1 is "
+	.string "~true is "
 	.globl	__temp0
 	.align 4
 	.type	__temp0, @object
@@ -131,20 +129,6 @@ __temp20:
 __temp21:
 	.long	0
 
-	.globl	__temp22
-	.align 4
-	.type	__temp22, @object
-	.size	__temp22, 4
-__temp22:
-	.long	0
-
-	.globl	__temp23
-	.align 4
-	.type	__temp23, @object
-	.size	__temp23, 4
-__temp23:
-	.long	0
-
 	.globl	__temp3
 	.align 4
 	.type	__temp3, @object
@@ -194,6 +178,36 @@ __temp8:
 __temp9:
 	.long	0
 
+	.globl	f
+	.align 4
+	.type	f, @object
+	.size	f, 1
+f:
+	.byte	0
+	.globl	t
+	.align 4
+	.type	t, @object
+	.size	t, 1
+t:
+	.byte	1
+	.globl	x
+	.align 4
+	.type	x, @object
+	.size	x, 4
+x:
+	.long	1
+	.globl	y
+	.align 4
+	.type	y, @object
+	.size	y, 4
+y:
+	.long	0
+	.globl	z
+	.align 4
+	.type	z, @object
+	.size	z, 1
+z:
+	.byte	1
 
 ._print_s:
 	.string	"%s"
@@ -216,162 +230,107 @@ main:
 	endbr64
 	pushq	%rbp
 	movq	%rsp, %rbp
-	leaq	.LC9(%rip), %rax
+	leaq	.LC6(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	je	.L12
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	je	.L12
 	movl	$1, %eax
-	cmpl	$2, %eax
-	setg	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp12(%rip)
-	movzbl	__temp12(%rip), %eax
-	testb	%al, %al
-	je	.L13
-	leaq	.true(%rip), %rax
-	jmp	.L14
+	jmp	.L13
+.L12:
+	movl	$0, %eax
 .L13:
-	leaq	.false(%rip), %rax
+	movl	%eax, __temp11(%rip)
+	movzbl	__temp11(%rip), %eax
+	testb	%al, %al
+	je	.L14
+	leaq	.true(%rip), %rax
+	jmp	.L15
 .L14:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC7(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$1, %eax
-	cmpl	$1, %eax
-	setg	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp13(%rip)
-	movzbl	__temp13(%rip), %eax
-	testb	%al, %al
-	je	.L15
-	leaq	.true(%rip), %rax
-	jmp	.L16
+	leaq	.false(%rip), %rax
 .L15:
-	leaq	.false(%rip), %rax
-.L16:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC8(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$2, %eax
-	cmpl	$1, %eax
-	setg	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp14(%rip)
-	movzbl	__temp14(%rip), %eax
-	testb	%al, %al
-	je	.L17
-	leaq	.true(%rip), %rax
-	jmp	.L18
-.L17:
-	leaq	.false(%rip), %rax
-.L18:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
+	leaq	.LC7(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	je	.L16
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	je	.L16
 	movl	$1, %eax
-	cmpl	$2, %eax
-	setl	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp15(%rip)
-	movzbl	__temp15(%rip), %eax
+	jmp	.L17
+.L16:
+	movl	$0, %eax
+.L17:
+	movl	%eax, __temp12(%rip)
+	movzbl	__temp12(%rip), %eax
 	testb	%al, %al
-	je	.L19
+	je	.L18
 	leaq	.true(%rip), %rax
-	jmp	.L20
+	jmp	.L19
+.L18:
+	leaq	.false(%rip), %rax
 .L19:
-	leaq	.false(%rip), %rax
-.L20:
 	movq	%rax, %rdi
 	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC1(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$1, %eax
-	cmpl	$1, %eax
-	setl	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp16(%rip)
-	movzbl	__temp16(%rip), %eax
-	testb	%al, %al
-	je	.L21
-	leaq	.true(%rip), %rax
-	jmp	.L22
-.L21:
-	leaq	.false(%rip), %rax
-.L22:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC2(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$2, %eax
-	cmpl	$1, %eax
-	setl	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp17(%rip)
-	movzbl	__temp17(%rip), %eax
-	testb	%al, %al
-	je	.L23
-	leaq	.true(%rip), %rax
-	jmp	.L24
-.L23:
-	leaq	.false(%rip), %rax
-.L24:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC6(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$1, %eax
-	cmpl	$2, %eax
-	setle	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp18(%rip)
-	movzbl	__temp18(%rip), %eax
-	testb	%al, %al
-	je	.L25
-	leaq	.true(%rip), %rax
-	jmp	.L26
-.L25:
-	leaq	.false(%rip), %rax
-.L26:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 	leaq	.LC4(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	je	.L20
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	je	.L20
 	movl	$1, %eax
-	cmpl	$1, %eax
-	setle	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp19(%rip)
-	movzbl	__temp19(%rip), %eax
+	jmp	.L21
+.L20:
+	movl	$0, %eax
+.L21:
+	movl	%eax, __temp13(%rip)
+	movzbl	__temp13(%rip), %eax
+	testb	%al, %al
+	je	.L22
+	leaq	.true(%rip), %rax
+	jmp	.L23
+.L22:
+	leaq	.false(%rip), %rax
+.L23:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC8(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	jne	.L24
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	je	.L25
+.L24:
+	movl	$1, %eax
+	jmp	.L26
+.L25:
+	movl	$0, %eax
+.L26:
+	movl	%eax, __temp14(%rip)
+	movzbl	__temp14(%rip), %eax
 	testb	%al, %al
 	je	.L27
 	leaq	.true(%rip), %rax
@@ -381,91 +340,170 @@ main:
 .L28:
 	movq	%rax, %rdi
 	call	printf@PLT
-	leaq	.LC0(%rip), %rax
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC9(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	jne	.L29
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	je	.L30
+.L29:
+	movl	$1, %eax
+	jmp	.L31
+.L30:
+	movl	$0, %eax
+.L31:
+	movl	%eax, __temp15(%rip)
+	movzbl	__temp15(%rip), %eax
+	testb	%al, %al
+	je	.L32
+	leaq	.true(%rip), %rax
+	jmp	.L33
+.L32:
+	leaq	.false(%rip), %rax
+.L33:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 	leaq	.LC5(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
-	movl	$2, %eax
-	cmpl	$1, %eax
-	setle	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp20(%rip)
-	movzbl	__temp20(%rip), %eax
-	testb	%al, %al
-	je	.L29
-	leaq	.true(%rip), %rax
-	jmp	.L30
-.L29:
-	leaq	.false(%rip), %rax
-.L30:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC12(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$1, %eax
-	cmpl	$2, %eax
-	setge	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp21(%rip)
-	movzbl	__temp21(%rip), %eax
-	testb	%al, %al
-	je	.L31
-	leaq	.true(%rip), %rax
-	jmp	.L32
-.L31:
-	leaq	.false(%rip), %rax
-.L32:
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	leaq	.LC10(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-	movl	$1, %eax
-	cmpl	$1, %eax
-	setge	%al
-	movzbl	%al, %eax
-	movl	%eax, __temp22(%rip)
-	movzbl	__temp22(%rip), %eax
-	testb	%al, %al
-	je	.L33
-	leaq	.true(%rip), %rax
-	jmp	.L34
-.L33:
-	leaq	.false(%rip), %rax
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	jne	.L34
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	je	.L35
 .L34:
+	movl	$1, %eax
+	jmp	.L36
+.L35:
+	movl	$0, %eax
+.L36:
+	movl	%eax, __temp16(%rip)
+	movzbl	__temp16(%rip), %eax
+	testb	%al, %al
+	je	.L37
+	leaq	.true(%rip), %rax
+	jmp	.L38
+.L37:
+	leaq	.false(%rip), %rax
+.L38:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	y(%rip), %eax
+	cmpl	x(%rip), %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp17(%rip)
+	movzbl	__temp17(%rip), %eax
+	testb	%al, %al
+	je	.L39
+	leaq	.true(%rip), %rax
+	jmp	.L40
+.L39:
+	leaq	.false(%rip), %rax
+.L40:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC2(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	x(%rip), %eax
+	cmpl	x(%rip), %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp18(%rip)
+	movzbl	__temp18(%rip), %eax
+	testb	%al, %al
+	je	.L41
+	leaq	.true(%rip), %rax
+	jmp	.L42
+.L41:
+	leaq	.false(%rip), %rax
+.L42:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	y(%rip), %eax
+	cmpl	y(%rip), %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp19(%rip)
+	movzbl	__temp19(%rip), %eax
+	testb	%al, %al
+	je	.L43
+	leaq	.true(%rip), %rax
+	jmp	.L44
+.L43:
+	leaq	.false(%rip), %rax
+.L44:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 	leaq	.LC11(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
-	movl	$2, %eax
-	cmpl	$1, %eax
-	setge	%al
+	movl	t(%rip), %eax
+	testl	%eax, %eax
+	sete	%al
 	movzbl	%al, %eax
-	movl	%eax, __temp23(%rip)
-	movzbl	__temp23(%rip), %eax
+	movl	%eax, __temp20(%rip)
+	movzbl	__temp20(%rip), %eax
 	testb	%al, %al
-	je	.L35
+	je	.L45
 	leaq	.true(%rip), %rax
-	jmp	.L36
-.L35:
+	jmp	.L46
+.L45:
 	leaq	.false(%rip), %rax
-.L36:
+.L46:
 	movq	%rax, %rdi
 	call	printf@PLT
-	leaq	.LC0(%rip), %rax
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC10(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+	movl	f(%rip), %eax
+	testl	%eax, %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp21(%rip)
+	movzbl	__temp21(%rip), %eax
+	testb	%al, %al
+	je	.L47
+	leaq	.true(%rip), %rax
+	jmp	.L48
+.L47:
+	leaq	.false(%rip), %rax
+.L48:
+	movq	%rax, %rdi
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 	popq	%rbp

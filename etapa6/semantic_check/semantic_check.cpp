@@ -349,9 +349,20 @@ bool checkTypes(ASTNode* node) {
         }
         
         case ASTNodeType::OpOr:
-        case ASTNodeType::OpAnd:
-        case ASTNodeType::OpNot: {
+        case ASTNodeType::OpAnd: {
             if(node->children[0]->inferedType != DataType::Bool || node->children[1]->inferedType != DataType::Bool) {
+                std::cout << "Expression with non-boolean type in logical operation\n";
+                hasError = true;
+                break;
+            }
+            
+            node->inferedType = DataType::Bool;
+
+            break;
+        }
+
+        case ASTNodeType::OpNot: {
+            if(node->children[0]->inferedType != DataType::Bool) {
                 std::cout << "Expression with non-boolean type in logical operation\n";
                 hasError = true;
                 break;

@@ -50,6 +50,7 @@
         "a": "cpp",
         "input": "cpp",
         "cstring": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "in": "c"
     }
 }

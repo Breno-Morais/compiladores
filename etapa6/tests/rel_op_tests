@@ -1,0 +1,28 @@
+// char a = 51;
+// char b = 'x';
+// char c = 100;
+// int number = 'A';
+// bool verdade = true;
+// int v[3] = 'a' 0 'b';
+// int matrix[100]; 
+// float num = 5.7;
+
+// float a = 1.0;
+
+int main() {
+    print "less 2 < 1 is " (2 < 1 ) "\n";
+    print "less 1 < 1 is " (1 < 1 ) "\n";
+    print "less 1 < 2 is " (1 < 2 ) "\n";
+
+    print "greater 2 > 1 is " (2 > 1 ) "\n";
+    print "greater 1 > 1 is " (1 > 1 ) "\n";
+    print "greater 1 > 2 is " (1 > 2 ) "\n";
+
+    print "greater or equal 2 >= 1 is " (2 >= 1 ) "\n";
+    print "greater or equal 1 >= 1 is " (1 >= 1 ) "\n";
+    print "greater or equal 1 >= 2 is " (1 >= 2 ) "\n";
+
+    print "less or equal 2 <= 1 is " (2 <= 1 ) "\n";
+    print "less or equal 1 <= 1 is " (1 <= 1 ) "\n";
+    print "less or equal 1 <= 2 is " (1 <= 2 ) "\n";
+}

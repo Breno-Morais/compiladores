@@ -1,28 +1,23 @@
-// char a = 51;
-// char b = 'x';
-// char c = 100;
-// int number = 'A';
-// bool verdade = true;
-// int v[3] = 'a' 0 'b';
-// int matrix[100]; 
-// float num = 5.7;
+bool f = false;
+bool t = true;
+bool z = true;
 
-// float a = 1.0;
+int x = 1;
+int y = 0;
 
 int main() {
-    print "less 2 < 1 is " (2 < 1 ) "\n";
-    print "less 1 < 1 is " (1 < 1 ) "\n";
-    print "less 1 < 2 is " (1 < 2 ) "\n";
+    print "true & false is " ( t & f ) "\n";
+    print "true & true is " ( t & t ) "\n";
+    print "false & false is " ( f & f ) "\n";
 
-    print "greater 2 > 1 is " (2 > 1 ) "\n";
-    print "greater 1 > 1 is " (1 > 1 ) "\n";
-    print "greater 1 > 2 is " (1 > 2 ) "\n";
+    print "true | false is " ( t | f ) "\n";
+    print "true | true is " ( t | t ) "\n";
+    print "false | false is " ( f | f ) "\n";
 
-    print "greater or equal 2 >= 1 is " (2 >= 1 ) "\n";
-    print "greater or equal 1 >= 1 is " (1 >= 1 ) "\n";
-    print "greater or equal 1 >= 2 is " (1 >= 2 ) "\n";
+    print "1 == 0 is " ( x == y ) "\n";
+    print "1 == 1 is " ( x == x ) "\n";
+    print "0 == 0 is " ( y == y ) "\n";
 
-    print "less or equal 2 <= 1 is " (2 <= 1 ) "\n";
-    print "less or equal 1 <= 1 is " (1 <= 1 ) "\n";
-    print "less or equal 1 <= 2 is " (1 <= 2 ) "\n";
+    print "~true is " ( ~t ) "\n";
+    print "~false is " ( ~f ) "\n";
 }

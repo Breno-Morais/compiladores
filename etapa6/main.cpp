@@ -47,8 +47,8 @@ int main(int argc, char **argv) {
         exit(4);
     }
 
-    printSymbolsTable();
-    std::cout << "\n\n";
+    // printSymbolsTable();
+    // std::cout << "\n\n";
     tacPrintList(generateCode(root));
 
     // root->print();

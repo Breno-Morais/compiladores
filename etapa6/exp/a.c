@@ -3,10 +3,12 @@
 // char* vasco() {
 //     return "are you";
 // }
-// char x = 1;
+int x = 1;
+int y = 1;
+int z = 1;
 
 int main() {
-    // char y = x && 5;
+    z = x && y;
     // printf("seguro\n");
     // printf("%c\n", 'a');
     // printf("%d\n", 5);
