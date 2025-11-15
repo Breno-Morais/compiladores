@@ -25,6 +25,15 @@ const std::unordered_set<TACType> reusableResEax = {
     TACType::CALL  // call leaves its return value in %eax
 };
 
+const std::array<std::string, 6> argumentLoc = {
+    "%edi", // 1st argument
+    "%esi", // 2nd argument
+    "%edx", // 3rd argument
+    "%ecx", // 4th argument
+    "%r8d", // 5th argument
+    "%r9d", // 6th argument
+};
+
 // --- Utility Functions ---
 std::string symbolToAsm(Symbol* sym) {
     std::string res;
@@ -52,8 +61,9 @@ std::string symbolToAsm(Symbol* sym) {
         }
 
         case SymbolType::Temp:
+        case SymbolType::Local:
         case SymbolType::VarId: {
-            res = sym->content + "(%rip)";
+            res = sym->content + ( sym->inStack ? "(%rbp)" : "(%rip)");
             break;
         }
 
@@ -78,8 +88,9 @@ std::string getAsmDestination(Symbol* sym) {
     switch(sym->symType) {
         case SymbolType::Temp:
         case SymbolType::VarId:
+        case SymbolType::Local:
             // This is the correct way to address a global variable
-            return sym->content + "(%rip)";
+            return sym->content + ( sym->inStack ? "(%rbp)" : "(%rip)");
         
         // These cases are illegal as L-values
         case SymbolType::Integer:

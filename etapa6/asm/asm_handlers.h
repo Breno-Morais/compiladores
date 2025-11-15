@@ -24,6 +24,7 @@ void handle_BeginFun(std::ostringstream& oss, TAC* code);
 void handle_EndFun(std::ostringstream& oss, TAC* code);
 void handle_Return(std::ostringstream& oss, TAC* code);
 void handle_Call(std::ostringstream& oss, TAC* code);
+void handle_Arg(std::ostringstream& oss, TAC* code);
 
 // --- I/O and Move Handlers ---
 void handle_Move(std::ostringstream& oss, TAC* code);

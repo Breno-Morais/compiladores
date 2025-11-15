@@ -22,6 +22,7 @@ enum class SymbolType: uint16_t {
 
     Temp,
     Label,
+    Local,
 };
 
 enum class DataType: uint8_t {
@@ -43,6 +44,17 @@ struct Symbol {
 
     //Used in functions
     std::vector<Symbol*> params;
+    bool inStack = false; // If the symbol is being stored in the stack (arg or local var)
+
+    int getParamIndex(Symbol* sym) {
+        for (size_t i = 0; i < params.size(); ++i) {
+            if (params[i] == sym) {
+                return static_cast<int>(i);
+            }
+        }
+        
+        return -1;
+    }
 };
 
 Symbol* insertSymbolIntoTable(char* text, SymbolType type);

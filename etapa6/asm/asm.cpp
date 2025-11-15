@@ -143,6 +143,11 @@ std::string generateAsm(TAC* code) {
                 break;
             }
 
+            case TACType::ARG: {
+                handle_Arg(oss, code);
+                break;
+            }
+
             // --------------------
             // --- I/O and Move ---
             // --------------------
@@ -164,9 +169,7 @@ std::string generateAsm(TAC* code) {
 
     // MOVEVEC,	
     // VECACCESS,
-    // CALL,	
     // ARG,	
-    // READ,
 
             default: 
                 break;

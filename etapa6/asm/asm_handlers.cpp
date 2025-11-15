@@ -48,21 +48,21 @@ void handle_Mul(std::ostringstream& oss, TAC* code) {
             <<  ", %eax\n"
                 "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
     } 
-    
+
     // Case 1: op1 is constant
     else if (code->op1->symType == SymbolType::Integer) {
         oss << "\tmovl\t" << symbolToAsm(code->op2) << ", %eax\n"
             "\timull\t" << symbolToAsm(code->op1) << ", %eax, %eax\n"
             "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
     }
-    
+
     // Case 2: op2 is constant (imull is commutative)
     else if (code->op2->symType == SymbolType::Integer) {
         oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\timull\t" << symbolToAsm(code->op2) << ", %eax, %eax\n"
             "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
     }
-    
+
     // Case 3: Neither is constant
     else {
         oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
@@ -186,6 +186,42 @@ void handle_IfZ(std::ostringstream& oss, TAC* code)  {
 void handle_BeginFun(std::ostringstream& oss, TAC* code) {
     print_OriginalTAC(oss, code);
 
+    int stackSize = 0;
+    int value = -4;
+    std::vector<Symbol*> locals;
+    if(code->res->params.size() > 0) {
+        stackSize = code->res->params.size() * 4;
+
+        for(size_t i = 0; i < code->res->params.size(); i++) {
+            code->res->params[i]->content = std::to_string(value);
+            value -= 4;
+
+            locals.push_back(code->res->params[i]);
+        }
+    }
+
+    int i;
+    ASTNode* funct = code->res->value;
+
+    if(funct) {
+        for(i = 0; funct->children[i] && funct->children[i]->type != ASTNodeType::LocalVarDecList; i++);
+
+        if(funct->children[i]) {
+            for(ASTNode* node = funct->children[i]; node != nullptr; node = node->children[1]) {
+                if(node->children[0] && node->children[0]->symbol) {
+                    node->children[0]->symbol->content = std::to_string(value);
+                    value -= 4;
+                    stackSize += 4;
+
+                    locals.push_back(node->children[0]->symbol);
+                }
+            }
+        }
+    }
+
+    // Aligns it to 16
+    stackSize = (stackSize + 15) & ~15;
+
     oss <<  "\t.text\n"
             "\t.globl\t" << code->res->content << "\n"
             "\t.type\t" << code->res->content << ", @function\n"
@@ -193,12 +229,30 @@ void handle_BeginFun(std::ostringstream& oss, TAC* code) {
             "\tendbr64\n"
             "\tpushq\t%rbp\n"
             "\tmovq\t%rsp, %rbp\n";
+    
+    // Initialize stack
+    if(stackSize > 0)
+        oss << "\tsubq\t$" << std::to_string(stackSize) << ", %rsp\n";
+
+    // Initialize all local variables
+    for (size_t i = 0; i < locals.size(); i++) {
+        if(locals[i]->symType == SymbolType::Local) {
+            // TODO: The value should be different
+            oss << "\tmovl\t$" << locals[i]->value->symbol->content << ", " << symbolToAsm(locals[i]) << "\n";
+        } else {
+            int index = code->res->getParamIndex(locals[i]);
+            if(index >= 0)
+                oss << "\tmovl\t" << argumentLoc[index] << ", " << symbolToAsm(locals[i]) << "\n";
+        }
+    }
+    
 }
 
 void handle_EndFun(std::ostringstream& oss, TAC* code) {
     print_OriginalTAC(oss, code);
 
-    oss <<  "\tpopq\t%rbp\n"
+    oss <<  "\tmovq\t%rbp, %rsp\n"
+            "\tpopq\t%rbp\n"
             "\tret\n"
             "\t.size\t" << code->res->content << ", .-" << code->res->content << "\n";
 }
@@ -215,6 +269,14 @@ void handle_Call(std::ostringstream& oss, TAC* code) {
 
     oss <<  "\tcall\t" << code->op1->content << "\n"
             "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
+}
+
+void handle_Arg(std::ostringstream& oss, TAC* code) {
+    print_OriginalTAC(oss, code);
+    
+    int index = code->res->getParamIndex(code->op2);
+    if(index >= 0)
+        oss << "\tmovl\t" << symbolToAsm(code->op1) << ", " << argumentLoc[index] << "\n";
 }
 
 // --- I/O and Move Handlers ---

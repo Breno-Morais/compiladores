@@ -39,7 +39,12 @@ bool checkDeclarations(ASTNode* node) {
             }
 
             if(symbol->symType == SymbolType::Identifier) { // It has not been specified yet
-                symbol->symType = SymbolType::VarId;
+                if(node->parent->type == ASTNodeType::LocalVarDecList) {
+                    symbol->symType = SymbolType::Local;
+                    symbol->inStack = true;
+                } else
+                    symbol->symType = SymbolType::VarId;
+
             } else { // Has already been declared
                 std::cout << "Symbol '" << symbol->content << "' already has been declared\n";
                 hasError = true;
@@ -214,6 +219,12 @@ bool checkTypes(ASTNode* node) {
             break;
         }
 
+        case ASTNodeType::DecFunc: {
+            node->symbol->value = node;
+
+            break;
+        }
+
         case ASTNodeType::Identifier: {
             if(node->symbol->symType == SymbolType::Identifier) {
                 std::cout << "Symbol '" << node->symbol->content << "' has not been declared\n";
@@ -244,7 +255,7 @@ bool checkTypes(ASTNode* node) {
         }
 
         case ASTNodeType::CmdAssign: {
-            if(node->symbol == nullptr || node->symbol->symType != SymbolType::VarId) {
+            if(node->symbol == nullptr || (node->symbol->symType != SymbolType::VarId && node->symbol->symType != SymbolType::Local)) {
                 std::cout << "Assignment to non-variable\n";
                 hasError = true;
                 break;

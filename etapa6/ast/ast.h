@@ -74,9 +74,19 @@ class ASTNode {
                     }
                 }
                 
-                if(symbol != nullptr && datatype != DataType::None) {
-                    symbol->dataType = datatype;
-                    inferedType = datatype;
+                if(type == ASTNodeType::LocalVarDecList) {
+                    if(children[0] && children[0]->symbol) children[0]->symbol->inStack = true;
+                }
+
+                if(symbol != nullptr) {
+                    if(datatype != DataType::None) {
+                        symbol->dataType = datatype;
+                        inferedType = datatype;
+                    }
+
+                    if(type == ASTNodeType::Param) {
+                        symbol->inStack = true;
+                    }
                 }
             }
 

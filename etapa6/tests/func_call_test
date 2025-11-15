@@ -1,18 +1,24 @@
 int x = 5;
 int y = 2;
 
-int A() {
-    print "A\n";
-    return 'A';
+int A(int a1) 
+int a = 1;
+{    
+    print "A) a1 = " a1 " | a = " a "\n";
+    return a + a1;
 }
 
-int B() {
-    print "B\n";
-    return 'B';
+int B(int b1, int b2)
+int res = 0;
+{
+    res = A(b1) + b1 + b2;
+    print "B) b1 = " b1 " | b2 = " b2 " | res = " res "\n";
+    return res;
 }
 
 int main() {
-    x = A();
-    print "main\n";
-    y = B();
+    x = A(1);
+    y = B(x, 1);
+    print "main) x = " x " | y = " y "\n";
+    print "expected x = 2 | y = 6\n";
 }

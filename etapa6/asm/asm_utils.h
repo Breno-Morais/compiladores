@@ -5,6 +5,7 @@
 #include "../tacs/tacs.h"         // Include your TAC header
 
 #include <unordered_set>
+#include <array>
 #include <string>
 #include <map>
 
@@ -13,6 +14,9 @@ extern std::map<DataType, std::string> dataSizeTable;
 
 // A map that defines the TACs that will leave the result into the register
 extern const std::unordered_set<TACType> reusableResEax;
+
+// The index is the same as the argument in the function, while the returning string holds the register for passing the arg
+extern const std::array<std::string, 6> argumentLoc;
 
 // --- Utility Functions ---
 std::string symbolToAsm(Symbol* sym);
