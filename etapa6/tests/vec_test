@@ -1,4 +1,5 @@
 int v[3] = 1 2 3;
+int z[3];
 int x = 1;
 
 int printV() {
@@ -7,6 +8,8 @@ int printV() {
 }
 
 int main() {
+    print "z: " z[0] " " z[1] " " z[2] "\n";
+
     x = printV();
 
     print "Overwrite v with just 5s\n";

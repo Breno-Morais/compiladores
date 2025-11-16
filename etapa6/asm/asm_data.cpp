@@ -6,6 +6,7 @@
 #include <sstream>      // For std::ostringstream
 #include <stdexcept>    // For std::runtime_error
 #include <cassert>      // For static_assert
+#include <algorithm>
 
 // Generates the entire data section by iterating the symbol table
 void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>& symbolTable, int& LCCounter) {
@@ -42,7 +43,7 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
                 if(!symbol->value)
                     break;
 
-                std::string size = dataSizeTable[symbol->dataType];
+                std::string size = std::to_string(dataSizeTable[symbol->dataType]);
 
                 oss << "\t.globl\t" << symbol->content << "\n"
                 "\t.align 4\n"
@@ -58,10 +59,12 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
                 if(!symbol->value)
                     break;
 
+                unsigned long size = dataSizeTable[symbol->dataType];
+
                 oss << "\t.globl\t" << symbol->content << "\n"
-                "\t.align 16\n"
+                "\t.align 4\n"
                 "\t.type\t" << symbol->content << ", @object\n"
-                "\t.size\t" << symbol->content << ", 20\n"
+                "\t.size\t" << symbol->content << ", " << std::to_string(std::max(std::stoi(symbol->value->children[0]->symbol->content) * size, size)) << "\n"
                 << symbol->content << ":\n";
 
                 if(symbol->value->type != ASTNodeType::DecVarArray)
@@ -98,8 +101,8 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
 
 // Generates the .rodata strings (like "%d", "true", etc.)
 void generateReadOnlyStrings(std::ostringstream& oss) {
-    oss <<  "\t.section\t.rodata\n"
-            "\n._print_s:\n"
+    oss <<  "\n\t.section\t.rodata\n"
+            "._print_s:\n"
             "\t.string\t\"%s\"\n"
             "._print_d:\n"
             "\t.string\t\"%d\"\n"

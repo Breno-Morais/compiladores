@@ -184,7 +184,7 @@ TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
             break;
 
         case ASTNodeType::ArrayElement:
-            result = tacJoin(code[0], new TAC(TACType::VECACCESS, makeTemp(), root->symbol, code[0] ? code[0]->res : nullptr));
+            result = tacJoin(code[0], new TAC(TACType::VECACCESS, makeTemp(), code[0] ? code[0]->res : nullptr, root->symbol));
             break;
 
         case ASTNodeType::FuncCall:

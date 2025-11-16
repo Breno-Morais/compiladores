@@ -114,8 +114,8 @@ x:
 	.size	y, 4
 y:
 	.long	2
-	.section	.rodata
 
+	.section	.rodata
 ._print_s:
 	.string	"%s"
 ._print_d:

@@ -23,6 +23,7 @@ std::string generateAsm(TAC* code) {
     code = goToTopTAC(code);
 
     while(code) {
+        print_OriginalTAC(oss, code);
         switch(code->type) {
             // ------------------
             // --- Arithmetic ---
@@ -138,7 +139,6 @@ std::string generateAsm(TAC* code) {
             }
 
             case TACType::CALL: {
-                // TODO: Needs to add the parameters shit
                 handle_Call(oss, code);
                 break;
             }
@@ -167,9 +167,15 @@ std::string generateAsm(TAC* code) {
                 break;
             }	
 
-    // MOVEVEC,	
-    // VECACCESS,
-    // ARG,	
+            case TACType::MOVEVEC: {
+                handle_Move(oss, code);
+                break;
+            }
+
+            case TACType::VECACCESS: {
+                handle_Move(oss, code);
+                break;
+            }
 
             default: 
                 break;

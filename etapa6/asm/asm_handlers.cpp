@@ -2,14 +2,8 @@
 #include "asm_utils.h" // For symbolToAsm, getAsmDestination
 #include <stdexcept> // For runtime_error
 
-static void print_OriginalTAC(std::ostringstream& oss, TAC* code) {
-    oss << "\n# TAC " << code->type << "\n";
-}
-
 // --- Arithmetic Handlers ---
 void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruction) {
-    print_OriginalTAC(oss, code);
-
     // Handle op1 (Load into %eax)
     // We check if the previous instruction's result is *our* op1.
     bool op1_already_in_eax =  (code->prev && 
@@ -41,8 +35,6 @@ void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruc
 }
 
 void handle_Mul(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     if (code->op1->symType == SymbolType::Integer && code->op2->symType == SymbolType::Integer) {
         oss << "\tmovl\t$" << (std::stoi(code->op1->content) * std::stoi(code->op2->content)) 
             <<  ", %eax\n"
@@ -73,8 +65,6 @@ void handle_Mul(std::ostringstream& oss, TAC* code) {
 }
 
 void handle_Div(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\tmovl\t" << symbolToAsm(code->op2) << ", %ecx\n"
             "\tcltd\n"
@@ -83,8 +73,6 @@ void handle_Div(std::ostringstream& oss, TAC* code) {
 }
 
 void handle_Mod(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\tmovl\t" << symbolToAsm(code->op2) << ", %esi\n"
             "\tcltd\n"
@@ -96,8 +84,6 @@ void handle_Mod(std::ostringstream& oss, TAC* code) {
 
 // --- Logic/Comparison Handlers ---
 void handle_Cmp(std::ostringstream& oss, TAC* code, const std::string& set_instruction) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tmovl\t" << symbolToAsm(code->op2) << ", %eax\n"
             "\tcmpl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\t" << set_instruction << "\t%al\n"
@@ -106,8 +92,6 @@ void handle_Cmp(std::ostringstream& oss, TAC* code, const std::string& set_instr
 }
 
 void handle_And(std::ostringstream& oss, TAC* code, int& LCCounter) {
-    print_OriginalTAC(oss, code);
-
     std::string labelPrint1 = ".L" + std::to_string(LCCounter);
     LCCounter++;
     std::string labelPrint2 = ".L" + std::to_string(LCCounter);
@@ -128,8 +112,6 @@ void handle_And(std::ostringstream& oss, TAC* code, int& LCCounter) {
 }
 
 void handle_Or(std::ostringstream& oss, TAC* code, int& LCCounter) {
-    print_OriginalTAC(oss, code);
-
     std::string labelPrint1 = ".L" + std::to_string(LCCounter);
     LCCounter++;
     std::string labelPrint2 = ".L" + std::to_string(LCCounter);
@@ -153,8 +135,6 @@ void handle_Or(std::ostringstream& oss, TAC* code, int& LCCounter) {
 }
 
 void handle_Not(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\ttestl\t%eax, %eax\n"
             "\tsete\t%al\n"
@@ -164,28 +144,20 @@ void handle_Not(std::ostringstream& oss, TAC* code) {
 
 // --- Control Flow Handlers ---
 void handle_Label(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss << code->res->content << ":\n";
 }
 
 void handle_Jump(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss << "\tjmp\t" << code->res->content << "\n";
 }
 
 void handle_IfZ(std::ostringstream& oss, TAC* code)  {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
             "\ttestl\t%eax, %eax\n"
             "\tjz\t" << code->res->content << "\n";
 }
 
 void handle_BeginFun(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     int stackSize = 0;
     int value = -4;
     std::vector<Symbol*> locals;
@@ -249,8 +221,6 @@ void handle_BeginFun(std::ostringstream& oss, TAC* code) {
 }
 
 void handle_EndFun(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tmovq\t%rbp, %rsp\n"
             "\tpopq\t%rbp\n"
             "\tret\n"
@@ -258,22 +228,16 @@ void handle_EndFun(std::ostringstream& oss, TAC* code) {
 }
 
 void handle_Return(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     if(!(code->prev && code->prev->res == code->res))
         oss << "\tmovl\t" << symbolToAsm(code->res) << ", %eax\n"; 
 }
 
 void handle_Call(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tcall\t" << code->op1->content << "\n"
             "\tmovl\t%eax, " << symbolToAsm(code->res) << "\n";
 }
 
-void handle_Arg(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-    
+void handle_Arg(std::ostringstream& oss, TAC* code) {    
     int index = code->res->getParamIndex(code->op2);
     if(index >= 0)
         oss << "\tmovl\t" << symbolToAsm(code->op1) << ", " << argumentLoc[index] << "\n";
@@ -281,14 +245,45 @@ void handle_Arg(std::ostringstream& oss, TAC* code) {
 
 // --- I/O and Move Handlers ---
 void handle_Move(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
+    Symbol* src = nullptr;
+    Symbol* dst = nullptr;
+    int index = 0;
 
-    oss << "\tmovl\t" << symbolToAsm(code->op1) << ", " << code->res->content << "(%rip)\n";
+    switch (code->type) {
+        case TACType::MOVE:
+            src = code->op1;
+            dst = code->res;
+            index = 0;
+            break;
+
+        case TACType::MOVEVEC:
+            src = code->op2;
+            dst = code->res;
+            index = std::stoi(code->op1->content);
+            break;
+
+        case TACType::VECACCESS:
+            src = code->op2;
+            dst = code->res;
+            index = std::stoi(code->op1->content);
+            break;
+        
+        default:
+            break;
+    }
+
+    if(src == nullptr || dst == nullptr)
+        throw std::runtime_error("Invalide move instruction.");
+
+    if(memorySym.count(src->symType)) {
+        oss << 
+            "\tmovl\t" << symbolToAsm(src, index) << ", %eax\n"
+            "\tmovl\t%eax, " << getAsmDestination(dst, index) << "\n";
+    } else
+        oss << "\tmovl\t" << symbolToAsm(src, index) << ", " << getAsmDestination(dst, index) << "\n";
 }
 
 void handle_Read(std::ostringstream& oss, TAC* code) {
-    print_OriginalTAC(oss, code);
-
     oss <<  "\tleaq\t" << symbolToAsm(code->res) << ", %rax\n"
             "\tmovq\t%rax, %rsi\n"
             "\tleaq\t._print_d(%rip), %rax\n"
@@ -298,8 +293,6 @@ void handle_Read(std::ostringstream& oss, TAC* code) {
 }
 
 void handle_Print(std::ostringstream& oss, TAC* code, int& LCCounter) {
-    print_OriginalTAC(oss, code);
-
     if(code->res->dataType == DataType::Bool) {
         std::string labelPrint1 = ".L" + std::to_string(LCCounter);
         LCCounter++;

@@ -1,10 +1,10 @@
 #include "asm_utils.h"
 
-std::map<DataType, std::string> dataSizeTable = {
-    {DataType::Int, "4"},
-    {DataType::Char, "1"},
-    {DataType::Bool, "1"},
-    {DataType::Real, "4"},
+std::map<DataType, int> dataSizeTable = {
+    {DataType::Int, 4},
+    {DataType::Char, 1},
+    {DataType::Bool, 1},
+    {DataType::Real, 4},
 };
 
 const std::unordered_set<TACType> reusableResEax = {
@@ -25,6 +25,13 @@ const std::unordered_set<TACType> reusableResEax = {
     TACType::CALL  // call leaves its return value in %eax
 };
 
+const std::unordered_set<SymbolType> memorySym = {
+    SymbolType::Temp,
+    SymbolType::VarId,
+    SymbolType::Local,
+    SymbolType::VecId
+};
+
 const std::array<std::string, 6> argumentLoc = {
     "%edi", // 1st argument
     "%esi", // 2nd argument
@@ -35,7 +42,7 @@ const std::array<std::string, 6> argumentLoc = {
 };
 
 // --- Utility Functions ---
-std::string symbolToAsm(Symbol* sym) {
+std::string symbolToAsm(Symbol* sym, int index) {
     std::string res;
     
     switch(sym->symType) {
@@ -68,7 +75,7 @@ std::string symbolToAsm(Symbol* sym) {
         }
 
         case SymbolType::VecId: {
-            // TODO:
+            res = ( (index > 0) ? (std::to_string(dataSizeTable[sym->dataType] * index) + "+") : "") + sym->content + "(%rip)";
             break;
         }
 
@@ -84,13 +91,15 @@ std::string symbolToAsm(Symbol* sym) {
     return res;
 };
 
-std::string getAsmDestination(Symbol* sym) {
+std::string getAsmDestination(Symbol* sym, int index) {
     switch(sym->symType) {
         case SymbolType::Temp:
         case SymbolType::VarId:
         case SymbolType::Local:
-            // This is the correct way to address a global variable
             return sym->content + ( sym->inStack ? "(%rbp)" : "(%rip)");
+
+        case SymbolType::VecId:
+            return ( (index > 0) ? (std::to_string(dataSizeTable[sym->dataType] * index) + "+") : "") + sym->content + "(%rip)";
         
         // These cases are illegal as L-values
         case SymbolType::Integer:
@@ -114,4 +123,8 @@ TAC* goToTopTAC(TAC* code) {
     for(cur = code; cur->prev != nullptr; cur = cur->prev);
 
     return cur;
+}
+
+void print_OriginalTAC(std::ostringstream& oss, TAC* code) {
+    oss << "\n# TAC " << code->type << "\n";
 }
