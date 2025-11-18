@@ -9,12 +9,12 @@
 
 std::string generateAsm(TAC* code) {
     std::ostringstream oss;
+    std::ostringstream dataOss;
     int LCcounter = 0;
 
     // --- 1. Data Section ---
     oss << "\t.text\n\t.section\t.data\n";
     auto symbolTable = getSymbolTable();
-    generateDataSection(oss, symbolTable, LCcounter);
     generateReadOnlyStrings(oss);
 
     // --- 2. Code Section ---
@@ -184,8 +184,11 @@ std::string generateAsm(TAC* code) {
         code = code->next;
     }
 
+    // I'm generating only later because we keep check of which temps are being used so we don't need to initialize them
+    generateDataSection(dataOss, symbolTable, LCcounter);
+
     // Security end of file info
     generateFileEpilogue(oss);
-    
-    return oss.str();
+
+    return dataOss.str() + oss.str();
 }

@@ -1,4 +1,5 @@
 int v[3] = 1 2 3;
+int a[3] = 'a' 2 'c';
 int z[3];
 int x = 1;
 

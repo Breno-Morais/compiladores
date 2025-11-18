@@ -18,5 +18,6 @@ void generateFileEpilogue(std::ostringstream& oss);
 
 // Helper for data generation
 std::string convertToAsm(const std::string& valueString, DataType dataType);
+std::string convertToAsmConst(const std::string& valueString, DataType dataType, DataType typeVar);
 
 #endif /* ASM_DATA_COMP */
