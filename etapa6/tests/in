@@ -1,23 +1,25 @@
-int v[3] = 1 2 3;
 int x = 1;
+int v[3];
 
-int printV() {
-    print "v: " v[0] " " v[1] " " v[2] "\n";
-    return 1;
-}
+// int printV() {
+//     print "v: " v[0] " " v[1] " " v[2] "\n";
+//     return 1;
+// }
 
 int main() {
-    x = printV();
+    print "v: " v[0] " " v[1] " " v[2] "\n";
 
-    print "Overwrite v with just 5s\n";
+    // x = printV();
+
+    // print "Overwrite v with just 5s\n";
     
-    v[0] = 5;
-    v[1] = 5;
-    v[2] = 5;
+    // v[0] = 5;
+    // v[1] = 5;
+    // v[2] = 5;
 
-    x = printV();
+    // x = printV();
 
-    x = v[0];
+    // x = v[0];
 
-    print "x: " x "\n";
+    // print "x: " x "\n";
 }

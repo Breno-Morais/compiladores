@@ -77,7 +77,7 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
                         oss << convertToAsm(node->children[0]->symbol->content, node->children[0]->symbol->dataType);
                     }
                 else if(symbol->value->children[0])
-                    oss << "\t.zero " << symbol->value->children[0]->symbol->content << "\n"; // TODO: Checa se o tamanho é só int ou não
+                    oss << "\t.zero " << std::to_string(std::max(std::stoi(symbol->value->children[0]->symbol->content) * size, size)) << "\n"; // TODO: Checa se o tamanho é só int ou não
 
                 break;
             }
