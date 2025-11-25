@@ -17,6 +17,7 @@ int res = 0;
 }
 
 int main() {
+    print "Enter main)\n";
     x = A(1);
     y = B(x, 1);
     print "main) x = " x " | y = " y "\n";

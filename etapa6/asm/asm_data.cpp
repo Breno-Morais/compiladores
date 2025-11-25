@@ -28,8 +28,6 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
             }
 
             case SymbolType::Temp: {
-                // TODO: Add types to Temp
-
                 oss << "\t.globl\t" << symbol->content << "\n"
                 "\t.align 4\n"
                 "\t.type\t" << symbol->content << ", @object\n"
@@ -77,7 +75,7 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
                         oss << convertToAsm(node->children[0]->symbol->content, node->children[0]->symbol->dataType);
                     }
                 else if(symbol->value->children[0])
-                    oss << "\t.zero " << std::to_string(std::max(std::stoi(symbol->value->children[0]->symbol->content) * size, size)) << "\n"; // TODO: Checa se o tamanho é só int ou não
+                    oss << "\t.zero " << std::to_string(std::max(std::stoi(symbol->value->children[0]->symbol->content) * size, size)) << "\n";
 
                 break;
             }
