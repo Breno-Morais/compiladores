@@ -11,6 +11,8 @@
     void yyerror(std::string msg);
 
     ASTNode* root;
+
+    int syntax_error_count = 0;
 %}
 
 %union {
@@ -69,6 +71,8 @@ program: decl                                                       { root = new
     ;
 
 decl: dec decl                                                      { $$ = new ASTNode(ASTNodeType::DecList, {$1, $2}); }
+    | error ';' decl                                                { yyerrok; $$ = $3; }
+    | error '}' decl                                                { yyerrok; $$ = $3; }
     |                                                               { $$ = nullptr; }
     ;
 
@@ -121,9 +125,12 @@ decvarl: decvar decvarl                                             { $$ = new A
 
 block: '{' lcmd '}'                                                 { $$ = new ASTNode(ASTNodeType::Block, {$2}); }
     | '{' '}'                                                       { $$ = new ASTNode(ASTNodeType::EmptyBlock); }
+    | '{' error '}'                                                 { yyerrok; $$ = new ASTNode(ASTNodeType::EmptyBlock); }
     ;
 
 lcmd: cmd lcmd                                                      { $$ = new ASTNode(ASTNodeType::CmdList, {$1, $2}); }
+    | error ';' lcmd                                                { $$ = $3; yyerrok; }
+    | error block lcmd                                                { $$ = $3; yyerrok; }
     |                                                               { $$ = nullptr; }
     ;
 
@@ -135,6 +142,7 @@ cmd:  TK_IDENTIFIER '=' expr ';'                                    { $$ = new A
     | exprflux                                                      { $$ = $1; }
     | block                                                         { $$ = $1; }
     | ';'                                                           { $$ = new ASTNode(ASTNodeType::CmdEmpty); }
+    | error ';'                                                     { yyerrok; $$ = new ASTNode(ASTNodeType::CmdEmpty);}
     ;
 
 printl: expr                                                        { $$ = new ASTNode(ASTNodeType::PrintList, {$1}); }
@@ -183,5 +191,6 @@ exprflux: KW_IF '(' expr ')' cmd                                    { $$ = new A
 void yyerror(std::string msg) {
     extern char* yytext;
     printf("Syntax error: %s at '%s', line %d\n", msg.c_str(), yytext, getLineNumber());
-    exit(3);
+
+    syntax_error_count++;
 }

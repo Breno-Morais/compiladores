@@ -20,6 +20,7 @@ extern FILE *yyin;
 extern char *yytext;
 extern int yydebug;
 extern ASTNode* root;
+extern int syntax_error_count;
 
 int isRunning(void);
 void initMe(void);
@@ -42,6 +43,13 @@ int main(int argc, char **argv) {
         yyparse();
     }
 
+    // root->print();
+
+    if(syntax_error_count > 0) {
+        fprintf(stderr, "Compilation failed with %d syntax errors.\n", syntax_error_count);
+        exit(3);
+    }
+
     if(ASTSemErrorCheck(root)) {
         std::cout << "\nExit 4\n";
         exit(4);
@@ -51,23 +59,21 @@ int main(int argc, char **argv) {
     // std::cout << "\n\n";
     // tacPrintList(generateCode(root));
 
-    // root->print();
+    // std::string output_filename;
+    // if (argc >= 3) {
+    //     output_filename = argv[2];
+    // } else {
+    //     output_filename = std::string(argv[1]) + ".s";
+    // }
 
-    std::string output_filename;
-    if (argc >= 3) {
-        output_filename = argv[2];
-    } else {
-        output_filename = std::string(argv[1]) + ".s";
-    }
+    // std::ofstream out(output_filename);
+    // if (!out.is_open()) {
+    //     std::cerr << "Error: Could not open output file " << output_filename << std::endl;
+    //     return 1;
+    // }
 
-    std::ofstream out(output_filename);
-    if (!out.is_open()) {
-        std::cerr << "Error: Could not open output file " << output_filename << std::endl;
-        return 1;
-    }
-
-    out << generateAsm(generateCode(root));
-    out.close();
+    // out << generateAsm(generateCode(root));
+    // out.close();
 
     // std::cout << "\n\nASM:\n\n" << generateAsm(generateCode(root));
 
