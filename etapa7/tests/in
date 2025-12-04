@@ -1,0 +1,10 @@
+int x = 1;
+int y = 2;
+int z = 0;
+
+int main() {
+    z = x + 1;
+    y = z + 2;
+    print "y: " y "\n";
+    print "z: " z "\n";
+}
