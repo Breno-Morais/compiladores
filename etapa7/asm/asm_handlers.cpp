@@ -235,25 +235,41 @@ void handle_Arg(std::ostringstream& oss, TAC* code) {
 void handle_Move(std::ostringstream& oss, TAC* code) {
     Symbol* src = nullptr;
     Symbol* dst = nullptr;
-    int index = 0;
+    int index = -1;
 
     switch (code->type) {
         case TACType::MOVE:
             src = code->op1;
             dst = code->res;
-            index = 0;
+            index = -1;
             break;
 
         case TACType::MOVEVEC:
             src = code->op2;
             dst = code->res;
-            index = std::stoi(code->op1->content);
+            
+            if(memorySym.count(code->op1->symType)) {
+                oss << "\tmovl\t" << code->op1->content << "(%rip), %eax\n" <<
+                       "\tcltq\n" <<
+                       "\tleaq\t0(,%rax,4), %rdx\n" <<
+                       "\tleaq\t" << src->content << "(%rip), %rax\n";
+            } else
+                index = std::stoi(code->op1->content);
+
             break;
 
         case TACType::VECACCESS:
             src = code->op2;
             dst = code->res;
-            index = std::stoi(code->op1->content);
+            
+            if(memorySym.count(code->op1->symType)) {
+                oss << "\tmovl\t" << code->op1->content << "(%rip), %eax\n" <<
+                       "\tcltq\n" <<
+                       "\tleaq\t0(,%rax,4), %rdx\n" <<
+                       "\tleaq\t" << src->content << "(%rip), %rax\n";
+            } else
+                index = std::stoi(code->op1->content);
+
             break;
         
         default:

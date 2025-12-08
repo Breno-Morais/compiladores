@@ -43,7 +43,7 @@ const std::array<std::string, 6> argumentLoc = {
 
 // --- Utility Functions ---
 std::string symbolToAsm(Symbol* sym, int index) {
-    std::string res;
+    std::string res = "";
     
     switch(sym->symType) {
         case SymbolType::Integer: {
@@ -75,12 +75,11 @@ std::string symbolToAsm(Symbol* sym, int index) {
         }
 
         case SymbolType::VecId: {
-            res = ( (index > 0) ? (std::to_string(dataSizeTable[sym->dataType] * index) + "+") : "") + sym->content + "(%rip)";
-            break;
-        }
-
-        case SymbolType::FuncId: {
-            // TODO:
+            if(index >= 0)
+                res = std::to_string(dataSizeTable[sym->dataType] * index) + "+" + sym->content + "(%rip)";
+            else
+                res = "(%rdx,%rax)";
+            
             break;
         }
 

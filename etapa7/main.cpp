@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         yyparse();
     }
 
-    // root->print();
+    root->print();
 
     if(syntax_error_count > 0) {
         fprintf(stderr, "Compilation failed with %d syntax errors.\n", syntax_error_count);
@@ -56,24 +56,24 @@ int main(int argc, char **argv) {
     }
 
     // printSymbolsTable();
-    // std::cout << "\n\n";
-    // tacPrintList(generateCode(root));
+    std::cout << "\n\n";
+    tacPrintList(generateCode(root));
 
-    // std::string output_filename;
-    // if (argc >= 3) {
-    //     output_filename = argv[2];
-    // } else {
-    //     output_filename = std::string(argv[1]) + ".s";
-    // }
+    std::string output_filename;
+    if (argc >= 3) {
+        output_filename = argv[2];
+    } else {
+        output_filename = std::string(argv[1]) + ".s";
+    }
 
-    // std::ofstream out(output_filename);
-    // if (!out.is_open()) {
-    //     std::cerr << "Error: Could not open output file " << output_filename << std::endl;
-    //     return 1;
-    // }
+    std::ofstream out(output_filename);
+    if (!out.is_open()) {
+        std::cerr << "Error: Could not open output file " << output_filename << std::endl;
+        return 1;
+    }
 
-    // out << generateAsm(generateCode(root));
-    // out.close();
+    out << generateAsm(generateCode(root));
+    out.close();
 
     // std::cout << "\n\nASM:\n\n" << generateAsm(generateCode(root));
 
