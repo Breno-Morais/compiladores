@@ -12,6 +12,8 @@
 void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>& symbolTable, int& LCCounter) {
     std::map<std::string, Symbol*>::iterator it;
 
+    oss << "\t.text\n\t.section\t.data\n";
+
     // Print asm of the variables and constants
     for (it = symbolTable.begin(); it != symbolTable.end(); it++) {
         Symbol* symbol = it->second;
@@ -100,6 +102,34 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
         }
     }
 }
+
+void generateTemp(std::ostringstream& oss, std::map<std::string, Symbol*>& symbolTable) {
+    std::map<std::string, Symbol*>::iterator it;
+
+    for (it = symbolTable.begin(); it != symbolTable.end(); it++) {
+        Symbol* symbol = it->second;
+
+        switch (symbol->symType) {
+            case SymbolType::Temp: {
+                // TODO: Add types to Temp
+
+                if (usedTemps.find(symbol) != usedTemps.end()) {
+                    oss << "\t.globl\t" << symbol->content << "\n"
+                    "\t.align 4\n"
+                    "\t.type\t" << symbol->content << ", @object\n"
+                    "\t.size\t" << symbol->content << ", 4\n"
+                    << symbol->content << ":\n\t.long\t0\n\n";
+                }
+
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+}
+
 
 // Generates the .rodata strings (like "%d", "true", etc.)
 void generateReadOnlyStrings(std::ostringstream& oss) {

@@ -11,6 +11,8 @@ void generateDataSection(std::ostringstream& oss,
                          std::map<std::string, Symbol*>& symbolTable, 
                          int& LCCounter);
 
+void generateTemp(std::ostringstream& oss, std::map<std::string, Symbol*>& symbolTable);
+
 // Generates the .rodata strings (like "%d", "true", etc.)
 void generateReadOnlyStrings(std::ostringstream& oss);
 
