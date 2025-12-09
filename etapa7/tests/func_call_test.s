@@ -20,6 +20,18 @@
 	.string "expected x = 2 | y = 6\n"
 .LC9:
 	.string "main) x = "
+	.globl	x
+	.align 4
+	.type	x, @object
+	.size	x, 4
+x:
+	.long	5
+	.globl	y
+	.align 4
+	.type	y, @object
+	.size	y, 4
+y:
+	.long	2
 	.globl	__temp0
 	.align 4
 	.type	__temp0, @object
@@ -41,39 +53,6 @@ __temp1:
 __temp2:
 	.long	0
 
-	.globl	__temp3
-	.align 4
-	.type	__temp3, @object
-	.size	__temp3, 4
-__temp3:
-	.long	0
-
-	.globl	__temp4
-	.align 4
-	.type	__temp4, @object
-	.size	__temp4, 4
-__temp4:
-	.long	0
-
-	.globl	__temp5
-	.align 4
-	.type	__temp5, @object
-	.size	__temp5, 4
-__temp5:
-	.long	0
-
-	.globl	x
-	.align 4
-	.type	x, @object
-	.size	x, 4
-x:
-	.long	5
-	.globl	y
-	.align 4
-	.type	y, @object
-	.size	y, 4
-y:
-	.long	2
 
 	.section	.rodata
 ._print_s:

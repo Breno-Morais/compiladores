@@ -45,14 +45,14 @@ int main(int argc, char **argv) {
 
     // root->print();
 
-    if(syntax_error_count > 0) {
-        fprintf(stderr, "Compilation failed with %d syntax errors.\n", syntax_error_count);
-        exit(3);
-    }
-
     if(ASTSemErrorCheck(root)) {
         std::cout << "\nExit 4\n";
         exit(4);
+    }
+
+   if(syntax_error_count > 0) {
+        fprintf(stderr, "Compilation failed with %d syntax errors.\n", syntax_error_count);
+        exit(3);
     }
 
     // printSymbolsTable();

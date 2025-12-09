@@ -1,5 +1,7 @@
 ### Otimizações:
 
+[X] Removido temps inúteis
+
 [X] Multiplicação e divisão por 2 viram shift
 
 [X] Loads redundantes

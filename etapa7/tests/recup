@@ -1,0 +1,17 @@
+int x = 1;
+int y 2;
+int z = 0;
+
+int main() {
+    if(z = 1) {
+        return 5;
+    } else {
+        z = 1;
+    }
+
+    return 1
+
+    z = 2;
+    z =;
+    z = 1 + 4;
+}
