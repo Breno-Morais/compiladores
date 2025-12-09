@@ -1,5 +1,3 @@
-	.text
-	.section	.data
 .LC0:
 	.string " "
 .LC1:
@@ -8,48 +6,60 @@
 	.string "\n"
 .LC3:
 	.string "v: "
-	.globl	__temp0
+.LC4:
+	.string "x: "
+.LC5:
+	.string "z: "
+	.globl	__temp10
 	.align 4
-	.type	__temp0, @object
-	.size	__temp0, 4
-__temp0:
+	.type	__temp10, @object
+	.size	__temp10, 4
+__temp10:
 	.long	0
 
-	.globl	__temp1
+	.globl	__temp11
 	.align 4
-	.type	__temp1, @object
-	.size	__temp1, 4
-__temp1:
+	.type	__temp11, @object
+	.size	__temp11, 4
+__temp11:
 	.long	0
 
-	.globl	__temp2
+	.globl	__temp12
 	.align 4
-	.type	__temp2, @object
-	.size	__temp2, 4
-__temp2:
+	.type	__temp12, @object
+	.size	__temp12, 4
+__temp12:
 	.long	0
 
-	.globl	__temp3
+	.globl	__temp13
 	.align 4
-	.type	__temp3, @object
-	.size	__temp3, 4
-__temp3:
+	.type	__temp13, @object
+	.size	__temp13, 4
+__temp13:
 	.long	0
 
-	.globl	__temp4
+	.globl	__temp14
 	.align 4
-	.type	__temp4, @object
-	.size	__temp4, 4
-__temp4:
+	.type	__temp14, @object
+	.size	__temp14, 4
+__temp14:
 	.long	0
 
-	.globl	__temp5
+	.globl	__temp9
 	.align 4
-	.type	__temp5, @object
-	.size	__temp5, 4
-__temp5:
+	.type	__temp9, @object
+	.size	__temp9, 4
+__temp9:
 	.long	0
 
+	.globl	a
+	.align 4
+	.type	a, @object
+	.size	a, 12
+a:
+	.long	97
+	.long	2
+	.long	99
 	.globl	v
 	.align 4
 	.type	v, @object
@@ -63,13 +73,15 @@ v:
 	.type	x, @object
 	.size	x, 4
 x:
-	.long	0
+	.long	1
 	.globl	z
 	.align 4
 	.type	z, @object
-	.size	z, 40000
+	.size	z, 12
 z:
-	.zero 40000
+	.zero 3
+	.text
+	.section	.data
 
 	.section	.rodata
 ._print_s:
@@ -90,6 +102,77 @@ z:
 
 # TAC BEGINFUN
 	.text
+	.globl	printV
+	.type	printV, @function
+printV:
+	endbr64
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+# TAC PRINT
+	leaq	(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC VECACCESS
+	movl	v(%rip), %eax
+	movl	%eax, __temp9(%rip)
+
+# TAC PRINT
+	movl	__temp9(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# TAC PRINT
+	leaq	(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC VECACCESS
+	movl	4+v(%rip), %eax
+	movl	%eax, __temp10(%rip)
+
+# TAC PRINT
+	movl	__temp10(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# TAC PRINT
+	leaq	(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC VECACCESS
+	movl	8+v(%rip), %eax
+	movl	%eax, __temp11(%rip)
+
+# TAC PRINT
+	movl	__temp11(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# TAC PRINT
+	leaq	(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC RET
+	movl	$1, %eax
+
+# TAC ENDFUN
+	movq	%rbp, %rsp
+	popq	%rbp
+	ret
+	.size	printV, .-printV
+
+# TAC BEGINFUN
+	.text
 	.globl	main
 	.type	main, @function
 main:
@@ -98,60 +181,64 @@ main:
 	movq	%rsp, %rbp
 
 # TAC PRINT
-	leaq	.LC3(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
 # TAC VECACCESS
-	movl	v(%rip), %eax
-	movl	%eax, __temp0(%rip)
+	movl	z(%rip), %eax
+	movl	%eax, __temp12(%rip)
 
 # TAC PRINT
-	movl	__temp0(%rip), %esi
+	movl	__temp12(%rip), %esi
 	leaq	._print_d(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC0(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
 # TAC VECACCESS
-	movl	4+v(%rip), %eax
-	movl	%eax, __temp1(%rip)
+	movl	4+z(%rip), %eax
+	movl	%eax, __temp13(%rip)
 
 # TAC PRINT
-	movl	__temp1(%rip), %esi
+	movl	__temp13(%rip), %esi
 	leaq	._print_d(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC0(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
 # TAC VECACCESS
-	movl	8+v(%rip), %eax
-	movl	%eax, __temp2(%rip)
+	movl	8+z(%rip), %eax
+	movl	%eax, __temp14(%rip)
 
 # TAC PRINT
-	movl	__temp2(%rip), %esi
+	movl	__temp14(%rip), %esi
 	leaq	._print_d(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC2(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
+# TAC CALL
+	call	printV
+	movl	%eax, x(%rip)
+
 # TAC PRINT
-	leaq	.LC1(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -164,56 +251,28 @@ main:
 # TAC MOVEVEC
 	movl	$5, 8+v(%rip)
 
-# TAC PRINT
-	leaq	.LC3(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
+# TAC CALL
+	call	printV
+	movl	%eax, x(%rip)
 
 # TAC VECACCESS
 	movl	v(%rip), %eax
-	movl	%eax, __temp3(%rip)
+	movl	%eax, x(%rip)
 
 # TAC PRINT
-	movl	__temp3(%rip), %esi
+	leaq	(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC PRINT
+	movl	x(%rip), %esi
 	leaq	._print_d(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC VECACCESS
-	movl	4+v(%rip), %eax
-	movl	%eax, __temp4(%rip)
-
-# TAC PRINT
-	movl	__temp4(%rip), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC VECACCESS
-	movl	8+v(%rip), %eax
-	movl	%eax, __temp5(%rip)
-
-# TAC PRINT
-	movl	__temp5(%rip), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC2(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 

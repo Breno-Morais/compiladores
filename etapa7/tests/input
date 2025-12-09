@@ -17,7 +17,7 @@ int v[10] = 'a' 0 'b' 0 0 0 0 0 0 0;
 
 int matrix[100]; 
 
-float num = 5.7;	
+float num = 2.5;	
 
 /*
 Este eh um comentario 
@@ -33,7 +33,9 @@ int incn (int p, int n )
 int main ()
 int x = 1;
 int y = 1;
+int f = 0;
   {
+  x = a[1];
   number = 0;
   c = 7 - 1;
   c = 5;
@@ -41,7 +43,7 @@ int y = 1;
   print v[5] 7 c;
   number = 2;
 
-  print "\nDigite um numero: \n";
+  print "Digite um numero: \n";
   read number;
 
   while (x<10)
@@ -71,7 +73,12 @@ int y = 1;
     }
   else
     print "OK!\n"; 
-  {{}} {}
+
+  if (y > 10)
+    print f;
+  else x = 10;
+
+  //a = func("");
   }
 
 // end of file

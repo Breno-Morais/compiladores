@@ -1,25 +1,21 @@
 	.text
 	.section	.data
 .LC0:
-	.string " | a = "
+	.string "5 is equal to 2\n"
 .LC1:
-	.string " | b2 = "
+	.string "5 is not equal to 2\n"
 .LC2:
-	.string " | res = "
+	.string "Você digitou "
 .LC3:
-	.string " | y = "
-.LC4:
-	.string "A) a1 = "
-.LC5:
-	.string "B) b1 = "
-.LC6:
-	.string "Enter main)\n"
-.LC7:
 	.string "\n"
-.LC8:
-	.string "expected x = 2 | y = 6\n"
-.LC9:
-	.string "main) x = "
+.LC4:
+	.string "parabéns\n"
+.LC5:
+	.string "x is "
+.LC6:
+	.string "x is now "
+.LC7:
+	.string "x is still higher than 2 because it is "
 	.globl	__temp0
 	.align 4
 	.type	__temp0, @object
@@ -55,13 +51,6 @@ __temp3:
 __temp4:
 	.long	0
 
-	.globl	__temp5
-	.align 4
-	.type	__temp5, @object
-	.size	__temp5, 4
-__temp5:
-	.long	0
-
 	.globl	x
 	.align 4
 	.type	x, @object
@@ -94,141 +83,6 @@ y:
 
 # TAC BEGINFUN
 	.text
-	.globl	A
-	.type	A, @function
-A:
-	endbr64
-	pushq	%rbp
-	movq	%rsp, %rbp
-	subq	$16, %rsp
-	movl	%edi, -4(%rbp)
-	movl	$1, -8(%rbp)
-
-# TAC PRINT
-	leaq	.LC4(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC PRINT
-	movl	-4(%rbp), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC0(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC PRINT
-	movl	-8(%rbp), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC7(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC ADD
-	movl	-8(%rbp), %eax
-	movl	-4(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, __temp0(%rip)
-
-# TAC RET
-
-# TAC ENDFUN
-	movq	%rbp, %rsp
-	popq	%rbp
-	ret
-	.size	A, .-A
-
-# TAC BEGINFUN
-	.text
-	.globl	B
-	.type	B, @function
-B:
-	endbr64
-	pushq	%rbp
-	movq	%rsp, %rbp
-	subq	$16, %rsp
-	movl	%edi, -4(%rbp)
-	movl	%esi, -8(%rbp)
-	movl	$0, -12(%rbp)
-
-# TAC ARG
-	movl	-4(%rbp), %edi
-
-# TAC CALL
-	call	A
-	movl	%eax, __temp1(%rip)
-
-# TAC ADD
-	movl	-4(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, __temp2(%rip)
-
-# TAC ADD
-	movl	-8(%rbp), %edx
-	addl	%edx, %eax
-	movl	%eax, -12(%rbp)
-
-# TAC PRINT
-	leaq	.LC5(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC PRINT
-	movl	-4(%rbp), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC1(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC PRINT
-	movl	-8(%rbp), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC2(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC PRINT
-	movl	-12(%rbp), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
-
-# TAC PRINT
-	leaq	.LC7(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
-# TAC RET
-	movl	-12(%rbp), %eax
-
-# TAC ENDFUN
-	movq	%rbp, %rsp
-	popq	%rbp
-	ret
-	.size	B, .-B
-
-# TAC BEGINFUN
-	.text
 	.globl	main
 	.type	main, @function
 main:
@@ -236,30 +90,39 @@ main:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
+# TAC EQUAL
+	movl	y(%rip), %eax
+	cmpl	x(%rip), %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp0(%rip)
+
+# TAC IFZ
+	movl	__temp0(%rip), %eax
+	testl	%eax, %eax
+	jz	__label0
+
 # TAC PRINT
-	leaq	.LC6(%rip), %rax
+	leaq	.LC0(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
-# TAC ARG
-	movl	$1, %edi
+# TAC JUMP
+	jmp	__label1
 
-# TAC CALL
-	call	A
-	movl	%eax, x(%rip)
-
-# TAC ARG
-	movl	x(%rip), %edi
-
-# TAC ARG
-	movl	$1, %esi
-
-# TAC CALL
-	call	B
-	movl	%eax, y(%rip)
+# TAC LABEL
+__label0:
 
 # TAC PRINT
-	leaq	.LC9(%rip), %rax
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC LABEL
+__label1:
+
+# TAC PRINT
+	leaq	.LC5(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -275,12 +138,20 @@ main:
 	movq	%rax, %rdi
 	call	printf@PLT
 
-# TAC PRINT
-	movl	y(%rip), %esi
-	leaq	._print_d(%rip), %rax
-	movq	%rax, %rdi
-	movl	$0, %eax
-	call	printf@PLT
+# TAC LABEL
+__label2:
+
+# TAC GREATER
+	movl	$2, %eax
+	cmpl	x(%rip), %eax
+	setl	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp1(%rip)
+
+# TAC IFZ
+	movl	__temp1(%rip), %eax
+	testl	%eax, %eax
+	jz	__label3
 
 # TAC PRINT
 	leaq	.LC7(%rip), %rax
@@ -288,9 +159,121 @@ main:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC8(%rip), %rax
+	movl	x(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# TAC PRINT
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
+
+# TAC SUB
+	movl	x(%rip), %eax
+	movl	$1, %edx
+	subl	%edx, %eax
+	movl	%eax, x(%rip)
+
+# TAC JUMP
+	jmp	__label2
+
+# TAC LABEL
+__label3:
+
+# TAC PRINT
+	leaq	.LC6(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC PRINT
+	movl	x(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# TAC PRINT
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC EQUAL
+	movl	y(%rip), %eax
+	cmpl	x(%rip), %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp3(%rip)
+
+# TAC IFZ
+	movl	__temp3(%rip), %eax
+	testl	%eax, %eax
+	jz	__label4
+
+# TAC PRINT
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC JUMP
+	jmp	__label5
+
+# TAC LABEL
+__label4:
+
+# TAC PRINT
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC LABEL
+__label5:
+
+# TAC READ
+	leaq	x(%rip), %rax
+	movq	%rax, %rsi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	__isoc99_scanf@PLT
+
+# TAC PRINT
+	leaq	.LC2(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC PRINT
+	movl	x(%rip), %esi
+	leaq	._print_d(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+
+# TAC PRINT
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC EQUAL
+	movl	$1, %eax
+	cmpl	x(%rip), %eax
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, __temp4(%rip)
+
+# TAC IFZ
+	movl	__temp4(%rip), %eax
+	testl	%eax, %eax
+	jz	__label6
+
+# TAC PRINT
+	leaq	.LC4(%rip), %rax
+	movq	%rax, %rdi
+	call	printf@PLT
+
+# TAC LABEL
+__label6:
 
 # TAC ENDFUN
 	movq	%rbp, %rsp

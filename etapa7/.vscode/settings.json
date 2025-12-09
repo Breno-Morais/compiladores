@@ -56,8 +56,6 @@
         "cassert": "cpp",
         "unordered_set": "cpp",
         "stdio.h": "c",
-        "func_call_test": "c",
-        "vec_test": "cpp"
-    },
-    "C_Cpp.errorSquiggles": "disabled"
+        "func_call_test": "c"
+    }
 }

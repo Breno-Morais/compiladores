@@ -22,6 +22,8 @@ extern const std::unordered_set<SymbolType> memorySym;
 // The index is the same as the argument in the function, while the returning string holds the register for passing the arg
 extern const std::array<std::string, 6> argumentLoc;
 
+extern std::map<Symbol*, bool> usedTemps;
+
 // --- Utility Functions ---
 std::string symbolToAsm(Symbol* sym, int index = 0);
 std::string getAsmDestination(Symbol* sym, int index = 0);

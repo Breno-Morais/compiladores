@@ -1,5 +1,3 @@
-	.text
-	.section	.data
 .LC0:
 	.string " | a = "
 .LC1:
@@ -13,53 +11,16 @@
 .LC5:
 	.string "B) b1 = "
 .LC6:
-	.string "Enter main)\n"
-.LC7:
 	.string "\n"
-.LC8:
+.LC7:
 	.string "expected x = 2 | y = 6\n"
-.LC9:
+.LC8:
 	.string "main) x = "
-	.globl	__temp0
+	.globl	__temp7
 	.align 4
-	.type	__temp0, @object
-	.size	__temp0, 4
-__temp0:
-	.long	0
-
-	.globl	__temp1
-	.align 4
-	.type	__temp1, @object
-	.size	__temp1, 4
-__temp1:
-	.long	0
-
-	.globl	__temp2
-	.align 4
-	.type	__temp2, @object
-	.size	__temp2, 4
-__temp2:
-	.long	0
-
-	.globl	__temp3
-	.align 4
-	.type	__temp3, @object
-	.size	__temp3, 4
-__temp3:
-	.long	0
-
-	.globl	__temp4
-	.align 4
-	.type	__temp4, @object
-	.size	__temp4, 4
-__temp4:
-	.long	0
-
-	.globl	__temp5
-	.align 4
-	.type	__temp5, @object
-	.size	__temp5, 4
-__temp5:
+	.type	__temp7, @object
+	.size	__temp7, 4
+__temp7:
 	.long	0
 
 	.globl	x
@@ -74,6 +35,8 @@ x:
 	.size	y, 4
 y:
 	.long	2
+	.text
+	.section	.data
 
 	.section	.rodata
 ._print_s:
@@ -105,7 +68,7 @@ A:
 	movl	$1, -8(%rbp)
 
 # TAC PRINT
-	leaq	.LC4(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -117,7 +80,7 @@ A:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC0(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -129,7 +92,7 @@ A:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC7(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -137,7 +100,6 @@ A:
 	movl	-8(%rbp), %eax
 	movl	-4(%rbp), %edx
 	addl	%edx, %eax
-	movl	%eax, __temp0(%rip)
 
 # TAC RET
 
@@ -165,12 +127,11 @@ B:
 
 # TAC CALL
 	call	A
-	movl	%eax, __temp1(%rip)
+	movl	%eax, __temp7(%rip)
 
 # TAC ADD
 	movl	-4(%rbp), %edx
 	addl	%edx, %eax
-	movl	%eax, __temp2(%rip)
 
 # TAC ADD
 	movl	-8(%rbp), %edx
@@ -178,7 +139,7 @@ B:
 	movl	%eax, -12(%rbp)
 
 # TAC PRINT
-	leaq	.LC5(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -190,7 +151,7 @@ B:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC1(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -202,7 +163,7 @@ B:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC2(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -214,7 +175,7 @@ B:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC7(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -236,11 +197,6 @@ main:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
-# TAC PRINT
-	leaq	.LC6(%rip), %rax
-	movq	%rax, %rdi
-	call	printf@PLT
-
 # TAC ARG
 	movl	$1, %edi
 
@@ -259,7 +215,7 @@ main:
 	movl	%eax, y(%rip)
 
 # TAC PRINT
-	leaq	.LC9(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -271,7 +227,7 @@ main:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC3(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
@@ -283,12 +239,12 @@ main:
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC7(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 
 # TAC PRINT
-	leaq	.LC8(%rip), %rax
+	leaq	(%rip), %rax
 	movq	%rax, %rdi
 	call	printf@PLT
 

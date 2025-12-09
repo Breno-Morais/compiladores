@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 
     // printSymbolsTable();
     // std::cout << "\n\n";
-    // tacPrintList(generateCode(root));
+    tacPrintList(generateCode(root));
 
     // root->print();
 

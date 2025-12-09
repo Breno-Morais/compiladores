@@ -5,6 +5,7 @@
 // --- Arithmetic Handlers ---
 void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruction) {
     // Handle op1 (Load into %eax)
+    // We check if the previous instruction's result is *our* op1.
     bool op1_already_in_eax =  (code->prev && 
                                 reusableResEax.count(code->prev->type) && 
                                 code->prev->res == code->op1);
@@ -15,11 +16,22 @@ void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruc
     }
 
     // Handle op2 (Load into %edx)
+    // No optimization for op2, just load it.
     oss << "\tmovl\t" << symbolToAsm(code->op2) << ", %edx\n";
 
+    // Perform the operation
     oss << "\t" << instruction << "\t%edx, %eax\n";
 
-    oss << "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
+    // Handle the result (Store from %eax)
+    // We check if the *next* instruction *uses* our result as op1.
+    bool res_used_by_next = (code->next && 
+                             (code->next->op1 == code->res || 
+                              (code->next->type == TACType::RET && code->next->res == code->res)));
+
+    if (!res_used_by_next) {
+        // If not used immediately, we must store it back to memory.
+        oss << "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
+    }
 }
 
 void handle_Mul(std::ostringstream& oss, TAC* code) {

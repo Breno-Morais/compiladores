@@ -1,0 +1,187 @@
+%{
+    // Trabalho Etapa 2 - Compiladores
+    // Aluno: Breno da Silva Morais - 00335794
+    
+    #include "./tacs/tacs.h"
+    #include <stdio.h>
+    #include <string>
+
+    int yylex();
+    int getLineNumber(void);
+    void yyerror(std::string msg);
+
+    ASTNode* root;
+%}
+
+%union {
+    Symbol* symbol;
+    ASTNode* ast;
+    DataType datatype;
+}
+
+%debug
+
+%token KW_CHAR
+%token KW_INT
+%token KW_FLOAT
+%token KW_BOOL
+
+%token KW_IF
+%token KW_ELSE
+%token KW_WHILE
+%token KW_READ
+%token KW_PRINT
+%token KW_RETURN
+
+%token OPERATOR_LE
+%token OPERATOR_GE
+%token OPERATOR_EQ
+%token OPERATOR_DIF
+
+%token <symbol>TK_IDENTIFIER
+
+%token <symbol>LIT_INT
+%token <symbol>LIT_CHAR
+%token <symbol>LIT_FLOAT
+%token <symbol>LIT_TRUE
+%token <symbol>LIT_FLASE
+%token <symbol>LIT_STRING
+
+%token TOKEN_ERROR
+
+%type <ast> program decl dec decvar lits vetinit vetl decfunc paraml param paramtail decvarl block lcmd cmd printl expr argl argtail exprflux
+%type <datatype> types
+
+%start program
+
+%left '|' 
+%left '&'
+%left OPERATOR_EQ OPERATOR_DIF
+%left OPERATOR_LE OPERATOR_GE '<' '>'
+%left '+' '-'
+%left '*' '/' '%'
+%right '~'      /* unary negation / bitwise not */
+%right '=' 
+
+%%
+
+program: decl                                                       { root = new ASTNode(ASTNodeType::Program, {$1}); }
+    ;
+
+decl: dec decl                                                      { $$ = new ASTNode(ASTNodeType::DecList, {$1, $2}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+dec: decvar                                                         { $$ = $1; }
+    | decfunc                                                       { $$ = $1; }
+    ;
+
+decvar: types TK_IDENTIFIER '=' lits ';'                            { $$ = new ASTNode(ASTNodeType::DecVar, {$4}, $2, $1); }
+    | types TK_IDENTIFIER '[' LIT_INT ']' vetinit ';'               { $$ = new ASTNode(ASTNodeType::DecVarArray, {new ASTNode(ASTNodeType::Lit, {}, $4, DataType::Int), $6}, $2, $1); }
+    ;
+
+types: KW_CHAR                                                      { $$ = DataType::Char; }
+    | KW_INT                                                        { $$ = DataType::Int; }  
+    | KW_FLOAT                                                      { $$ = DataType::Real; }
+    | KW_BOOL                                                       { $$ = DataType::Bool; }
+    ;
+
+lits: LIT_INT                                                       { $$ = new ASTNode(ASTNodeType::Lit, {}, $1, DataType::Int); }
+    | LIT_CHAR                                                      { $$ = new ASTNode(ASTNodeType::Lit, {}, $1, DataType::Char); }
+    | LIT_FLOAT                                                     { $$ = new ASTNode(ASTNodeType::Lit, {}, $1, DataType::Real); }
+    | LIT_TRUE                                                      { $$ = new ASTNode(ASTNodeType::Lit, {}, $1, DataType::Bool); }
+    | LIT_FLASE                                                     { $$ = new ASTNode(ASTNodeType::Lit, {}, $1, DataType::Bool); }
+    ;
+
+vetinit : '=' lits vetl                                             { $$ = new ASTNode(ASTNodeType::VetInit, {$2, $3}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+vetl: lits vetl                                                     { $$ = new ASTNode(ASTNodeType::VetInit, {$1, $2}); }
+    |                                                               { $$ = nullptr; }
+    ;
+    
+decfunc: types TK_IDENTIFIER '(' paraml ')' decvarl block           { $$ = new ASTNode(ASTNodeType::DecFunc, {$4, $6, $7}, $2, $1); }
+    ;
+
+paraml: param paramtail                                             { $$ = new ASTNode(ASTNodeType::ParamList, {$1, $2}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+param: types TK_IDENTIFIER                                          { $$ = new ASTNode(ASTNodeType::Param, {}, $2, $1); }
+    ;
+
+paramtail: ',' param paramtail                                      { $$ = new ASTNode(ASTNodeType::ParamList, {$2, $3}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+decvarl: decvar decvarl                                             { $$ = new ASTNode(ASTNodeType::LocalVarDecList, {$1, $2}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+block: '{' lcmd '}'                                                 { $$ = new ASTNode(ASTNodeType::Block, {$2}); }
+    | '{' '}'                                                       { $$ = new ASTNode(ASTNodeType::EmptyBlock); }
+    ;
+
+lcmd: cmd lcmd                                                      { $$ = new ASTNode(ASTNodeType::CmdList, {$1, $2}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+cmd:  TK_IDENTIFIER '=' expr ';'                                    { $$ = new ASTNode(ASTNodeType::CmdAssign, {$3}, $1); }
+    | TK_IDENTIFIER '[' expr ']' '=' expr ';'                       { $$ = new ASTNode(ASTNodeType::CmdArrayElementAssign, {$3, $6}, $1); }
+    | KW_READ TK_IDENTIFIER ';'                                     { $$ = new ASTNode(ASTNodeType::CmdRead, {}, $2); }
+    | KW_PRINT printl ';'                                           { $$ = new ASTNode(ASTNodeType::CmdPrint, {$2}); }
+    | KW_RETURN expr ';'                                            { $$ = new ASTNode(ASTNodeType::CmdReturn, {$2}); }
+    | exprflux                                                      { $$ = $1; }
+    | block                                                         { $$ = $1; }
+    | ';'                                                           { $$ = new ASTNode(ASTNodeType::CmdEmpty); }
+    ;
+
+printl: expr                                                        { $$ = new ASTNode(ASTNodeType::PrintList, {$1}); }
+    | LIT_STRING                                                    { $$ = new ASTNode(ASTNodeType::PrintList, {}, $1); }
+    | LIT_STRING printl                                             { $$ = new ASTNode(ASTNodeType::PrintList, {$2}, $1); }
+    | expr printl                                                   { $$ = new ASTNode(ASTNodeType::PrintList, {$1, $2}); }
+    ;
+
+expr: expr '+' expr                                                 { $$ = new ASTNode(ASTNodeType::OpAdd, {$1, $3}); }
+    | expr '-' expr                                                 { $$ = new ASTNode(ASTNodeType::OpSub, {$1, $3}); }
+    | expr '*' expr                                                 { $$ = new ASTNode(ASTNodeType::OpMul, {$1, $3}); }
+    | expr '/' expr                                                 { $$ = new ASTNode(ASTNodeType::OpDiv, {$1, $3}); }
+    | expr '%' expr                                                 { $$ = new ASTNode(ASTNodeType::OpMod, {$1, $3}); }
+    | expr '<' expr                                                 { $$ = new ASTNode(ASTNodeType::OpLess, {$1, $3}); }
+    | expr '>' expr                                                 { $$ = new ASTNode(ASTNodeType::OpGreater, {$1, $3}); }
+    | expr '=' expr                                                 { $$ = new ASTNode(ASTNodeType::OpAssign, {$1, $3}); }
+    | expr '&' expr                                                 { $$ = new ASTNode(ASTNodeType::OpAnd, {$1, $3}); }
+    | expr '|' expr                                                 { $$ = new ASTNode(ASTNodeType::OpOr, {$1, $3}); }
+    | expr OPERATOR_LE expr                                         { $$ = new ASTNode(ASTNodeType::OpLessEqual, {$1, $3}); }
+    | expr OPERATOR_GE expr                                         { $$ = new ASTNode(ASTNodeType::OpGreaterEqual, {$1, $3}); }
+    | expr OPERATOR_EQ expr                                         { $$ = new ASTNode(ASTNodeType::OpEqual, {$1, $3}); }
+    | expr OPERATOR_DIF expr                                        { $$ = new ASTNode(ASTNodeType::OpNotEqual, {$1, $3}); }
+    | '(' expr ')'                                                  { $$ = $2; }
+    | '~' expr                                                      { $$ = new ASTNode(ASTNodeType::OpNot, {$2}); }
+    | lits                                                          { $$ = $1; }
+    | TK_IDENTIFIER                                                 { $$ = new ASTNode(ASTNodeType::Identifier, {}, $1); }
+    | TK_IDENTIFIER '[' expr ']'                                    { $$ = new ASTNode(ASTNodeType::ArrayElement, {$3}, $1); }
+    | TK_IDENTIFIER '(' argl ')'                                    { $$ = new ASTNode(ASTNodeType::FuncCall, {$3}, $1); }
+    | TK_IDENTIFIER '(' ')'                                         { $$ = new ASTNode(ASTNodeType::FuncCall, {}, $1); }
+    ;
+
+argl: expr argtail                                                  { $$ = new ASTNode(ASTNodeType::ArgList, {$1, $2}); }
+    ;
+
+argtail: ',' expr argtail                                           { $$ = new ASTNode(ASTNodeType::ArgList, {$2, $3}); }
+    |                                                               { $$ = nullptr; }
+    ;
+
+exprflux: KW_IF '(' expr ')' cmd                                    { $$ = new ASTNode(ASTNodeType::CmdIf, {$3, $5}); }
+    | KW_IF '(' expr ')' cmd KW_ELSE cmd                            { $$ = new ASTNode(ASTNodeType::CmdIfElse, {$3, $5, $7}); }
+    | KW_WHILE expr cmd                                             { $$ = new ASTNode(ASTNodeType::CmdWhile, {$2, $3}); }
+    ;
+
+%%
+
+void yyerror(std::string msg) {
+    extern char* yytext;
+    printf("Syntax error: %s at '%s', line %d\n", msg.c_str(), yytext, getLineNumber());
+    exit(3);
+}

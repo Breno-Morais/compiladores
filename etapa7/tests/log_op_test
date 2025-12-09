@@ -1,0 +1,23 @@
+bool f = false;
+bool t = true;
+bool z = true;
+
+int x = 1;
+int y = 0;
+
+int main() {
+    print "true & false is " ( t & f ) "\n";
+    print "true & true is " ( t & t ) "\n";
+    print "false & false is " ( f & f ) "\n";
+
+    print "true | false is " ( t | f ) "\n";
+    print "true | true is " ( t | t ) "\n";
+    print "false | false is " ( f | f ) "\n";
+
+    print "1 == 0 is " ( x == y ) "\n";
+    print "1 == 1 is " ( x == x ) "\n";
+    print "0 == 0 is " ( y == y ) "\n";
+
+    print "~true is " ( ~t ) "\n";
+    print "~false is " ( ~f ) "\n";
+}

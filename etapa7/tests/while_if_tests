@@ -22,12 +22,4 @@ int main() {
     } else {
         print "5 is not equal to 2\n";
     }
-
-    read x;
-
-    print "Você digitou " x "\n";
-
-    if(x == 1) {
-        print "parabéns\n";
-    } 
 }

@@ -1,10 +1,13 @@
 int v[3] = 1 2 3;
-int z[10000];
-int x = 0;
+int x = 1;
+
+int printV() {
+    print "v: " v[0] " " v[1] " " v[2] "\n";
+    return 1;
+}
 
 int main() {
-
-    print "v: " v[0] " " v[1] " " v[2] "\n";
+    x = printV();
 
     print "Overwrite v with just 5s\n";
     
@@ -12,5 +15,9 @@ int main() {
     v[1] = 5;
     v[2] = 5;
 
-    print "v: " v[0] " " v[1] " " v[2] "\n";
+    x = printV();
+
+    x = v[0];
+
+    print "x: " x "\n";
 }

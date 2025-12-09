@@ -7,4 +7,8 @@ int main() {
     print "5 * 2 is " ( x * y ) "\n";
     print "5 / 2 is " ( x / y ) "\n";
     print "5 % 2 is " ( x % y ) "\n";
+
+    if(x == y) {
+        
+    }
 }
