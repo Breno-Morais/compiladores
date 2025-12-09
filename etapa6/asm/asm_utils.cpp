@@ -41,8 +41,6 @@ const std::array<std::string, 6> argumentLoc = {
     "%r9d", // 6th argument
 };
 
-std::map<Symbol*, bool> usedTemps = {};
-
 // --- Utility Functions ---
 std::string symbolToAsm(Symbol* sym, int index) {
     std::string res;
@@ -70,7 +68,6 @@ std::string symbolToAsm(Symbol* sym, int index) {
         }
 
         case SymbolType::Temp:
-            usedTemps[sym] = true;
         case SymbolType::Local:
         case SymbolType::VarId: {
             res = sym->content + ( sym->inStack ? "(%rbp)" : "(%rip)");
@@ -79,6 +76,11 @@ std::string symbolToAsm(Symbol* sym, int index) {
 
         case SymbolType::VecId: {
             res = ( (index > 0) ? (std::to_string(dataSizeTable[sym->dataType] * index) + "+") : "") + sym->content + "(%rip)";
+            break;
+        }
+
+        case SymbolType::FuncId: {
+            // TODO:
             break;
         }
 
@@ -92,7 +94,6 @@ std::string symbolToAsm(Symbol* sym, int index) {
 std::string getAsmDestination(Symbol* sym, int index) {
     switch(sym->symType) {
         case SymbolType::Temp:
-            usedTemps[sym] = true;
         case SymbolType::VarId:
         case SymbolType::Local:
             return sym->content + ( sym->inStack ? "(%rbp)" : "(%rip)");

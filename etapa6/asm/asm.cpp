@@ -9,12 +9,12 @@
 
 std::string generateAsm(TAC* code) {
     std::ostringstream oss;
-    std::ostringstream dataOss;
     int LCcounter = 0;
 
     // --- 1. Data Section ---
+    oss << "\t.text\n\t.section\t.data\n";
     auto symbolTable = getSymbolTable();
-    generateDataSection(dataOss, symbolTable, LCcounter);
+    generateDataSection(oss, symbolTable, LCcounter);
     generateReadOnlyStrings(oss);
 
     // --- 2. Code Section ---
@@ -184,10 +184,8 @@ std::string generateAsm(TAC* code) {
         code = code->next;
     }
 
-    generateTemp(dataOss, symbolTable);
-
     // Security end of file info
     generateFileEpilogue(oss);
-
-    return dataOss.str() + oss.str();
+    
+    return oss.str();
 }
