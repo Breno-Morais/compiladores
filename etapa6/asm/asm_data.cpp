@@ -12,6 +12,8 @@
 void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>& symbolTable, int& LCCounter) {
     std::map<std::string, Symbol*>::iterator it;
 
+    oss << "\t.text\n\t.section\t.data\n";
+
     // Print asm of the variables and constants
     for (it = symbolTable.begin(); it != symbolTable.end(); it++) {
         Symbol* symbol = it->second;
@@ -24,16 +26,6 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
                     "\t.string " << symbol->content << "\n";
 
                 LCCounter++;
-                break;
-            }
-
-            case SymbolType::Temp: {
-                oss << "\t.globl\t" << symbol->content << "\n"
-                "\t.align 4\n"
-                "\t.type\t" << symbol->content << ", @object\n"
-                "\t.size\t" << symbol->content << ", 4\n"
-                << symbol->content << ":\n\t.long\t0\n\n";
-
                 break;
             }
 
@@ -72,7 +64,7 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
                 if(symbol->value->children[1])
                     for(ASTNode* node = symbol->value->children[1]; node != nullptr; node = node->children[1]) {
                         if(node->children[0] && node->children[0]->symbol)
-                        oss << convertToAsm(node->children[0]->symbol->content, node->children[0]->symbol->dataType);
+                        oss << convertToAsmConst(node->children[0]->symbol->content, node->children[0]->symbol->dataType, symbol->dataType);
                     }
                 else if(symbol->value->children[0])
                     oss << "\t.zero " << std::to_string(std::max(std::stoi(symbol->value->children[0]->symbol->content) * size, size)) << "\n";
@@ -96,6 +88,34 @@ void generateDataSection(std::ostringstream& oss, std::map<std::string, Symbol*>
         }
     }
 }
+
+void generateTemp(std::ostringstream& oss, std::map<std::string, Symbol*>& symbolTable) {
+    std::map<std::string, Symbol*>::iterator it;
+
+    for (it = symbolTable.begin(); it != symbolTable.end(); it++) {
+        Symbol* symbol = it->second;
+
+        switch (symbol->symType) {
+            case SymbolType::Temp: {
+                // TODO: Add types to Temp
+
+                if (usedTemps.find(symbol) != usedTemps.end()) {
+                    oss << "\t.globl\t" << symbol->content << "\n"
+                    "\t.align 4\n"
+                    "\t.type\t" << symbol->content << ", @object\n"
+                    "\t.size\t" << symbol->content << ", 4\n"
+                    << symbol->content << ":\n\t.long\t0\n\n";
+                }
+
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+}
+
 
 // Generates the .rodata strings (like "%d", "true", etc.)
 void generateReadOnlyStrings(std::ostringstream& oss) {
@@ -164,6 +184,78 @@ std::string convertToAsm(const std::string& valueString, DataType dataType) {
 
     return oss.str() + '\n';
 };
+
+std::string convertToAsmConst(const std::string& valueString, DataType dataType, DataType typeVar) {
+    std::ostringstream oss;
+
+    switch (typeVar) {
+        case DataType::Bool: 
+        case DataType::Char: {
+            oss << "\t.byte\t";
+            break;
+        }
+
+        case DataType::Real:
+        case DataType::Int: {
+            oss << "\t.long\t";
+            break;
+        }
+
+        case DataType::None:
+        default:
+            // Handle error or uninitialized data (e.g., .zero directive)
+            // For now, returning an error string or throwing is best.
+            throw std::runtime_error("Cannot convert 'None' or unknown type to assembly value.");
+    }
+
+
+    switch (dataType) {
+        case DataType::Char: {
+            // Get the ASCII value of the first character
+            int asciiValue = static_cast<int>(valueString[1]);
+            oss << asciiValue;
+            break;
+        }
+
+        case DataType::Bool: {
+            // Convert "true" to 1, otherwise 0
+            int boolValue = (valueString == "true") ? 1 : 0;
+            oss << boolValue;
+            break;
+        }
+
+        case DataType::Int: {
+            // Parse the string as an integer
+            // stoi will handle parsing "50" to 50
+            oss << std::stoi(valueString);
+            break;
+        }
+
+        case DataType::Real: {
+            // Parse to float, then get its 32-bit integer bit-pattern
+            float floatValue = std::stof(valueString);
+            uint32_t intRepresentation;
+
+            // Ensure float is 32-bit on this platform
+            static_assert(sizeof(float) == sizeof(uint32_t), "Float must be 32-bit");
+            
+            // Use memcpy to safely copy the bits
+            std::memcpy(&intRepresentation, &floatValue, sizeof(floatValue));
+
+            oss << intRepresentation;
+            break;
+        }
+
+        case DataType::None:
+        default:
+            // Handle error or uninitialized data (e.g., .zero directive)
+            // For now, returning an error string or throwing is best.
+            throw std::runtime_error("Cannot convert 'None' or unknown type to assembly value.");
+    }
+
+    return oss.str() + '\n';
+};
+
 
 void generateFileEpilogue(std::ostringstream& oss) {
     oss <<  "\n# FILE SECURITY DETAIL\n"
