@@ -1,11 +1,9 @@
 #include <stdio.h>
 
-int v[3] = {'a', 0, 'c'};
-int z = 2;
-int x = 1;
+int x = 11231;
 
 int main() {
-    x = v[x];
+    x = x / 8;
 }
 
 // gcc -S a.c -fno-asynchronous-unwind-tables -fno-dwarf2-cfi-asm

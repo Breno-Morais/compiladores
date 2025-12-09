@@ -42,7 +42,7 @@ void ASTNode::print(const std::string& prefix, bool isLast) const {
     }
 }
 
-std::string ASTNode::generateCode(int indent) const {
+std::string ASTNode::generateSourceCode(int indent) const {
     auto ind = std::string(indent * 2, ' ');
 
     switch (type) {
@@ -53,21 +53,21 @@ std::string ASTNode::generateCode(int indent) const {
 
         // === DECLARATIONS ===
         case ASTNodeType::DecVar:
-            return ind + children[0]->generateCode() + " " + symbol->content +
-                   " = " + children[1]->generateCode() + ";\n";
+            return ind + children[0]->generateSourceCode() + " " + symbol->content +
+                   " = " + children[1]->generateSourceCode() + ";\n";
 
         case ASTNodeType::DecVarArray: {
             std::string init;
-            if (children.size() > 1 && children[2]) init = " = " + children[2]->generateCode();
-            return ind + children[0]->generateCode() + " " + symbol->content +
-                   "[" + children[1]->generateCode() + "]" + init + ";\n";
+            if (children.size() > 1 && children[2]) init = " = " + children[2]->generateSourceCode();
+            return ind + children[0]->generateSourceCode() + " " + symbol->content +
+                   "[" + children[1]->generateSourceCode() + "]" + init + ";\n";
         }
 
         case ASTNodeType::VetInit: {
             std::string code;
             for (auto* c : children) if (c) {
                 if (!code.empty()) code += " ";
-                code += c->generateCode();
+                code += c->generateSourceCode();
             }
             return code;
         }
@@ -96,32 +96,32 @@ std::string ASTNode::generateCode(int indent) const {
                 }
             }
 
-            return ind + returnType->generateCode() + " " + symbol->content +
-                   "(" + (param ? param->generateCode() : "") + ")\n" + 
-                   (localVarDecs ? localVarDecs->generateCode(indent + 1) : "") +
-                   (block ? block->generateCode(indent) : "");
+            return ind + returnType->generateSourceCode() + " " + symbol->content +
+                   "(" + (param ? param->generateSourceCode() : "") + ")\n" + 
+                   (localVarDecs ? localVarDecs->generateSourceCode(indent + 1) : "") +
+                   (block ? block->generateSourceCode(indent) : "");
         }
 
         case ASTNodeType::Param:
-            return children[0]->generateCode() + " " + symbol->content;
+            return children[0]->generateSourceCode() + " " + symbol->content;
 
         case ASTNodeType::ParamList: {
-            std::string left = children[0] ? children[0]->generateCode() : "";
-            std::string right = children[1] ? children[1]->generateCode() : "";
+            std::string left = children[0] ? children[0]->generateSourceCode() : "";
+            std::string right = children[1] ? children[1]->generateSourceCode() : "";
             if (!left.empty() && !right.empty()) return left + ", " + right;
             return left + right;
         }
 
         case ASTNodeType::LocalVarDecList: {
             std::string code;
-            for (auto* c : children) if (c) code += c->generateCode(indent);
+            for (auto* c : children) if (c) code += c->generateSourceCode(indent);
             return code;
         }
 
         // === BLOCK ===
         case ASTNodeType::Block: {
             std::string code = ind + "{\n";
-            for (auto* c : children) if (c) code += c->generateCode(indent + 1);
+            for (auto* c : children) if (c) code += c->generateSourceCode(indent + 1);
             code += ind + "}\n";
             return code;
         }
@@ -132,38 +132,38 @@ std::string ASTNode::generateCode(int indent) const {
         // === COMMANDS  ===
         case ASTNodeType::CmdList: {
             std::string code;
-            for (auto* c : children) if (c) code += c->generateCode(indent);
+            for (auto* c : children) if (c) code += c->generateSourceCode(indent);
             return code;
         }
 
         case ASTNodeType::CmdAssign:
-            return ind + symbol->content + " = " + children[0]->generateCode() + ";\n";
+            return ind + symbol->content + " = " + children[0]->generateSourceCode() + ";\n";
 
         case ASTNodeType::CmdArrayElementAssign:
-            return ind + symbol->content + "[" + children[0]->generateCode() + "] = " +
-                   children[1]->generateCode() + ";\n";
+            return ind + symbol->content + "[" + children[0]->generateSourceCode() + "] = " +
+                   children[1]->generateSourceCode() + ";\n";
 
         case ASTNodeType::CmdRead:
             return ind + "read " + symbol->content + ";\n";
 
         case ASTNodeType::CmdPrint:
-            return ind + "print " + children[0]->generateCode() + ";\n";
+            return ind + "print " + children[0]->generateSourceCode() + ";\n";
 
         case ASTNodeType::CmdReturn:
-            return ind + "return " + children[0]->generateCode() + ";\n";
+            return ind + "return " + children[0]->generateSourceCode() + ";\n";
 
         case ASTNodeType::CmdIf:
-            return ind + "if (" + children[0]->generateCode() + ")\n" +
-                   children[1]->generateCode(indent);
+            return ind + "if (" + children[0]->generateSourceCode() + ")\n" +
+                   children[1]->generateSourceCode(indent);
 
         case ASTNodeType::CmdIfElse:
-            return ind + "if (" + children[0]->generateCode() + ")\n" +
-                   children[1]->generateCode(indent) +
-                   ind + "else \n" + children[2]->generateCode(indent + 1);
+            return ind + "if (" + children[0]->generateSourceCode() + ")\n" +
+                   children[1]->generateSourceCode(indent) +
+                   ind + "else \n" + children[2]->generateSourceCode(indent + 1);
 
         case ASTNodeType::CmdWhile:
-            return ind + "while (" + children[0]->generateCode() + ")\n" +
-                   children[1]->generateCode(indent);
+            return ind + "while (" + children[0]->generateSourceCode() + ")\n" +
+                   children[1]->generateSourceCode(indent);
 
         case ASTNodeType::CmdEmpty:
             return "";
@@ -175,7 +175,7 @@ std::string ASTNode::generateCode(int indent) const {
             if (symbol) code += symbol->content;
             for (auto* c : children) if (c) {
                 if (!code.empty()) code += " ";
-                code += c->generateCode();
+                code += c->generateSourceCode();
             }
             return code;
         }
@@ -183,40 +183,40 @@ std::string ASTNode::generateCode(int indent) const {
         // === FUNCTION CALL ===
         case ASTNodeType::FuncCall:
             return symbol->content + "(" +
-                   (children.size() > 0 && children[0] ? children[0]->generateCode() : "") + ")";
+                   (children.size() > 0 && children[0] ? children[0]->generateSourceCode() : "") + ")";
 
         case ASTNodeType::ArgList: {
-            std::string left = children[0] ? children[0]->generateCode() : "";
-            std::string right = children[1] ? children[1]->generateCode() : "";
+            std::string left = children[0] ? children[0]->generateSourceCode() : "";
+            std::string right = children[1] ? children[1]->generateSourceCode() : "";
             if (!left.empty() && !right.empty()) return left + ", " + right;
             return left + right;
         }
 
         // === EXPRESSIONS ===
-        case ASTNodeType::OpAdd: return children[0]->generateCode() + " + " + children[1]->generateCode();
-        case ASTNodeType::OpSub: return children[0]->generateCode() + " - " + children[1]->generateCode();
-        case ASTNodeType::OpMul: return children[0]->generateCode() + " * " + children[1]->generateCode();
-        case ASTNodeType::OpDiv: return children[0]->generateCode() + " / " + children[1]->generateCode();
-        case ASTNodeType::OpMod: return children[0]->generateCode() + " % " + children[1]->generateCode();
-        case ASTNodeType::OpLess: return children[0]->generateCode() + " < " + children[1]->generateCode();
-        case ASTNodeType::OpGreater: return children[0]->generateCode() + " > " + children[1]->generateCode();
-        case ASTNodeType::OpEqual: return children[0]->generateCode() + " == " + children[1]->generateCode();
-        case ASTNodeType::OpNotEqual: return children[0]->generateCode() + " != " + children[1]->generateCode();
-        case ASTNodeType::OpLessEqual: return children[0]->generateCode() + " <= " + children[1]->generateCode();
-        case ASTNodeType::OpGreaterEqual: return children[0]->generateCode() + " >= " + children[1]->generateCode();
-        case ASTNodeType::OpAnd: return children[0]->generateCode() + " & " + children[1]->generateCode();
-        case ASTNodeType::OpOr: return children[0]->generateCode() + " | " + children[1]->generateCode();
-        case ASTNodeType::OpAssign: return children[0]->generateCode() + " = " + children[1]->generateCode();
-        case ASTNodeType::OpNot: return "~" + children[0]->generateCode();
+        case ASTNodeType::OpAdd: return children[0]->generateSourceCode() + " + " + children[1]->generateSourceCode();
+        case ASTNodeType::OpSub: return children[0]->generateSourceCode() + " - " + children[1]->generateSourceCode();
+        case ASTNodeType::OpMul: return children[0]->generateSourceCode() + " * " + children[1]->generateSourceCode();
+        case ASTNodeType::OpDiv: return children[0]->generateSourceCode() + " / " + children[1]->generateSourceCode();
+        case ASTNodeType::OpMod: return children[0]->generateSourceCode() + " % " + children[1]->generateSourceCode();
+        case ASTNodeType::OpLess: return children[0]->generateSourceCode() + " < " + children[1]->generateSourceCode();
+        case ASTNodeType::OpGreater: return children[0]->generateSourceCode() + " > " + children[1]->generateSourceCode();
+        case ASTNodeType::OpEqual: return children[0]->generateSourceCode() + " == " + children[1]->generateSourceCode();
+        case ASTNodeType::OpNotEqual: return children[0]->generateSourceCode() + " != " + children[1]->generateSourceCode();
+        case ASTNodeType::OpLessEqual: return children[0]->generateSourceCode() + " <= " + children[1]->generateSourceCode();
+        case ASTNodeType::OpGreaterEqual: return children[0]->generateSourceCode() + " >= " + children[1]->generateSourceCode();
+        case ASTNodeType::OpAnd: return children[0]->generateSourceCode() + " & " + children[1]->generateSourceCode();
+        case ASTNodeType::OpOr: return children[0]->generateSourceCode() + " | " + children[1]->generateSourceCode();
+        case ASTNodeType::OpAssign: return children[0]->generateSourceCode() + " = " + children[1]->generateSourceCode();
+        case ASTNodeType::OpNot: return "~" + children[0]->generateSourceCode();
 
         // === TOP LEVEL ===
         case ASTNodeType::DecList: {
             std::string code;
-            for (auto* c : children) if (c) code += c->generateCode(indent);
+            for (auto* c : children) if (c) code += c->generateSourceCode(indent);
             return code;
         }
         case ASTNodeType::Program:
-            return children[0]->generateCode(indent);
+            return children[0]->generateSourceCode(indent);
 
         default:
             return "";

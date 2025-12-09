@@ -103,6 +103,15 @@ std::string generateAsm(TAC* code) {
                 break;
             }
 
+            case TACType::LSHIFT: {
+                handle_Shift(oss, code, true);
+                break;
+            }
+            case TACType::RSHIFT: {
+                handle_Shift(oss, code, false);
+                break;
+            }
+
             // --------------------
             // --- Control Flow ---
             // --------------------

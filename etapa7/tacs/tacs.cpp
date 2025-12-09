@@ -95,7 +95,34 @@ TAC* tacJoin(TAC* l1, TAC* l2) {
     return l2;
 }
 
-TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
+/* Retira a TAC t da lista, e retorna a próxima tac*/
+TAC* tacRemove(TAC* t) {
+    if(!t) return nullptr;
+
+    if(t->next)
+        t->next->prev = t->prev;
+
+    if(t->prev)
+        t->prev->next = t->next;
+
+    return t->next;
+}
+
+TAC* generateCode(ASTNode* root) {
+    TAC* result = createTAC(root);
+    
+    tacPrintList(result);
+    for(TAC* cur = result; cur != nullptr; cur = cur->prev) {
+        removeAllTacSymbols(cur);   
+        removeDeadCode(cur);
+    }
+    std::cout << "\n\n";
+    tacPrintList(result);    
+
+    return result;
+}
+
+TAC* createTAC(ASTNode* root, Symbol* funcContext, int index) {
     if(!root) return 0;
 
     TAC* code[std::max(static_cast<int>(root->children.size()), 4)];
@@ -107,7 +134,7 @@ TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
     }
 
     for(size_t i = 0; i < root->children.size(); i++) {
-        code[i] = generateCode(
+        code[i] = createTAC(
             root->children[i], 
             (root->type == ASTNodeType::FuncCall) ? root->symbol: funcContext, 
             (root->type == ASTNodeType::ArgList) ? index + 1: index
@@ -177,6 +204,7 @@ TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
         case ASTNodeType::OpEqual:
         case ASTNodeType::OpNotEqual:
             result = tacJoin(tacJoin(code[0],code[1]), new TAC(ASTtoTAC[root->type], makeTemp(), code[0] ? code[0]->res : nullptr, code[1] ? code[1]->res : nullptr));
+            result = TACConstantFold(result);
             break;
     
         case ASTNodeType::OpNot:
@@ -251,10 +279,184 @@ TAC* generateCode(ASTNode* root, Symbol* funcContext, int index) {
             break;
     }
 
-    removeAllTacSymbols(result);
-
     return result;
 }
+
+/* eL: End of list*/
+void removeAllTacSymbols(TAC* eL) {
+    if(!eL) return;
+
+    if(eL->type == TACType::SYMBOL) {
+        tacRemove(eL);
+    }
+
+    // Talvez tenha um memory leak mas a vida é assim mesmo
+}
+
+void removeDeadCode(TAC* eL) {
+    if(!eL) return;
+
+    if(eL->type == TACType::RET) {
+        for(TAC* dead = eL->next; dead != nullptr; dead = dead->next) {
+            if(dead->type == TACType::ENDFUN || dead->type == TACType::LABEL)
+                break;
+
+            tacRemove(dead);
+        }
+    }
+}
+
+void removeRedundancy(TAC* eL) {
+    if(!eL) return;
+
+    switch(eL->type) {
+        case TACType::JUMP:
+            if(eL->next && eL->next->type == TACType::LABEL && eL->res == eL->next->res) {
+                tacRemove(eL);
+            }
+        
+            break;
+
+        default:
+            break;
+    }
+
+}
+
+static int getPowerOfTwo(int n) {
+    if (n <= 0) return -1;
+    if ((n & (n - 1)) == 0) { // Check if power of 2
+        int shift = 0;
+        while ((n >> 1) > 0) {
+            n >>= 1;
+            shift++;
+        }
+        return shift;
+    }
+    return -1;
+}
+
+TAC* TACConstantFold(TAC* t) {
+    if(!t) return nullptr;
+
+    if (t->op1 && t->op1->symType == SymbolType::Integer && 
+        t->op2 && t->op2->symType == SymbolType::Integer) {
+
+        std::string tempName = "";
+        int val1 = std::stoi(t->op1->content);
+        int val2 = std::stoi(t->op2->content);
+
+        switch (t->type) {
+            case TACType::ADD:
+                tempName = std::to_string(val1 + val2);
+                break;
+
+            case TACType::SUB:
+                tempName = std::to_string(val1 - val2);
+                break;
+
+            case TACType::MUL:
+                tempName = std::to_string(val1 * val2);
+                break;
+
+            case TACType::DIV:
+                if(val2 != 0) tempName = std::to_string(static_cast<int>(val1 / val2));
+                break;
+
+            case TACType::MOD:
+                if(val2 != 0) tempName = std::to_string(val1 % val2);
+                break;
+
+            default:
+                break;
+        }
+
+        if(tempName != "") {
+            Symbol* newLit = insertSymbolIntoTable(const_cast<char*>(tempName.c_str()), SymbolType::Integer);
+            
+            t->type = TACType::MOVE;
+            t->op1 = newLit;
+            t->op2 = nullptr; 
+            return t;
+        }
+    }
+
+    // CASE One Variable, One Literal
+    bool op1Lit = (t->op1 && t->op1->symType == SymbolType::Integer);
+    bool op2Lit = (t->op2 && t->op2->symType == SymbolType::Integer);
+
+    if (op1Lit || op2Lit) {
+        int val = op1Lit ? std::stoi(t->op1->content) : std::stoi(t->op2->content);
+        Symbol* varSym = op1Lit ? t->op2 : t->op1; // The variable part
+
+        // ADD 0, SUB 0, MUL 1, DIV 1
+        
+        // x + 0  OR  0 + x  -> MOVE x
+        if (t->type == TACType::ADD && val == 0) {
+            t->type = TACType::MOVE;
+            t->op1 = varSym;
+            t->op2 = nullptr;
+            return t;
+        }
+
+        // x - 0 -> MOVE x
+        if (t->type == TACType::SUB && val == 0 && !op1Lit) {
+            t->type = TACType::MOVE;
+            t->op1 = varSym;
+            t->op2 = nullptr;
+            return t;
+        }
+
+        // x * 1  OR  1 * x  -> MOVE x
+        if (t->type == TACType::MUL && val == 1) {
+            t->type = TACType::MOVE;
+            t->op1 = varSym;
+            t->op2 = nullptr;
+            return t;
+        }
+
+        // x / 1 -> MOVE x (Note: 1 / x is NOT x)
+        if (t->type == TACType::DIV && val == 1 && !op1Lit) {
+            t->type = TACType::MOVE;
+            t->op1 = varSym;
+            t->op2 = nullptr;
+            return t;
+        }
+
+        // x * 0 OR 0 * x -> MOVE 0
+        if (t->type == TACType::MUL && val == 0) {
+            t->type = TACType::MOVE;
+            t->op1 = insertSymbolIntoTable(const_cast<char*>("0"), SymbolType::Integer);
+            t->op2 = nullptr;
+            return t;
+        }
+
+        int power = getPowerOfTwo(val);
+        
+        // Multiplication by power of 2
+        // x * 8 -> x << 3
+        if (t->type == TACType::MUL && power > 0) {
+            t->type = TACType::LSHIFT;
+            t->op1 = varSym;
+            std::string shiftStr = std::to_string(power);
+            t->op2 = insertSymbolIntoTable(const_cast<char*>(shiftStr.c_str()), SymbolType::Integer);
+            return t;
+        }
+
+        // Division by power of 2
+        // x / 8 -> x >> 3
+        if (t->type == TACType::DIV && power > 0 && !op1Lit) {
+            t->type = TACType::RSHIFT;
+            t->op1 = varSym;
+            std::string shiftStr = std::to_string(power);
+            t->op2 = insertSymbolIntoTable(const_cast<char*>(shiftStr.c_str()), SymbolType::Integer);
+            return t;
+        }
+    }
+
+    return t;
+}
+
 
 
 static std::string getTACTypeString(const TACType& value) {
@@ -273,6 +475,8 @@ static std::string getTACTypeString(const TACType& value) {
         {TACType::EQUAL, "EQUAL"},
         {TACType::NOTEQUAL, "NOTEQUAL"},
         {TACType::NOT, "NOT"},
+        {TACType::LSHIFT, "LSHIFT"},
+        {TACType::RSHIFT, "RSHIFT"},
         {TACType::SYMBOL, "SYMBOL"},	
         {TACType::VECACCESS, "VECACCESS"},	
         {TACType::MOVE, "MOVE"},	
@@ -297,20 +501,3 @@ static std::string getTACTypeString(const TACType& value) {
 std::ostream& operator<<(std::ostream& out, const TACType& value) {
     return out << getTACTypeString(value);
 };
-
-/* eL: End of list*/
-void removeAllTacSymbols(TAC* eL) {
-    if(!eL) return;
-
-    for(TAC* cur = eL; cur != nullptr; cur = cur->prev) {
-        if(cur->type == TACType::SYMBOL) {
-            if(cur->next)
-                cur->next->prev = cur->prev;
-
-            if(cur->prev)
-                cur->prev->next = cur->next;
-        }
-    }
-
-    // Talvez tenha um memory leak mas a vida é assim mesmo
-}

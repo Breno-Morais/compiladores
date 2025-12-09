@@ -1,14 +1,33 @@
-int i = 0;
-int n = 5;
-int y = 1;
-int x = 0;
-int z = 0;
-int a[5];
+int i = 1;
 
 int main() {
-  while (i < n) {
-      x = y + z;
-      a[i] = 6 * i + x * x;
-      i = i + 1;
-  }
+    i = i * 2;
+
+    print "i é " i "\n";
+
+    i = i * 4;
+
+    print "i é " i "\n";
+
+    i = i / 2;
+
+    print "i é " i "\n";
+
+    i = i / 4;
+
+    print "i é " i "\n";
+
+    // i = 5 + 5;
+    // i = 1 - 1;
+    // i = 6 / 3;
+    // i = 2 * 3;
+    // i = 10 % 4;
+
+    // i = i * 2;
+    // i = 4 * i;
+    // i = i * 8;
+
+    // i = i / 2;
+    // i = 2 / i;
+    // i = i / 4;
 }

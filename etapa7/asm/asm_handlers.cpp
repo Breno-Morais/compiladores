@@ -70,6 +70,12 @@ void handle_Mod(std::ostringstream& oss, TAC* code) {
             "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
 }
 
+void handle_Shift(std::ostringstream& oss, TAC* code, bool toLeft) {
+    oss << "\tmovl\t" << symbolToAsm(code->op1) << ", %eax\n"
+           "\t" << (toLeft ? "sall" : "sarl") << "\t$" << code->op2->content << ", %eax\n"
+           "\tmovl\t%eax, " << getAsmDestination(code->res) << "\n";
+}
+
 // --- Logic/Comparison Handlers ---
 void handle_Cmp(std::ostringstream& oss, TAC* code, const std::string& set_instruction) {
     oss <<  "\tmovl\t" << symbolToAsm(code->op2) << ", %eax\n"

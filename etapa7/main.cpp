@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         yyparse();
     }
 
-    root->print();
+    // root->print();
 
     if(syntax_error_count > 0) {
         fprintf(stderr, "Compilation failed with %d syntax errors.\n", syntax_error_count);
@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
     }
 
     // printSymbolsTable();
-    std::cout << "\n\n";
-    tacPrintList(generateCode(root));
+    // std::cout << "\n\n";
+    // tacPrintList(generateCode(root));
 
     std::string output_filename;
     if (argc >= 3) {

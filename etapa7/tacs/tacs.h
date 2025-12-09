@@ -23,6 +23,8 @@ enum class TACType {
     NOTEQUAL,
 
     NOT,
+    LSHIFT,
+    RSHIFT,
 
     SYMBOL,	
     VECACCESS,	
@@ -56,9 +58,15 @@ struct TAC {
 void tacPrint(TAC* t);
 void tacPrintList(TAC* l);
 TAC* tacJoin(TAC* l1, TAC* l2);
-void removeAllTacSymbols(TAC* eL);
+TAC* tacRemove(TAC* t);
 
-TAC* generateCode(ASTNode* root, Symbol* funcContext = nullptr, int index = 0);
+TAC* generateCode(ASTNode* root);
+TAC* createTAC(ASTNode* root, Symbol* funcContext = nullptr, int index = 0);
+
+// Otim
+void removeAllTacSymbols(TAC* eL);
+void removeDeadCode(TAC* eL);
+TAC* TACConstantFold(TAC* t);
 
 std::ostream& operator<<(std::ostream& out, const TACType& value);
 

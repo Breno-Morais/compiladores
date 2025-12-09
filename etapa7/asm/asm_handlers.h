@@ -9,6 +9,7 @@ void handle_BinOp(std::ostringstream& oss, TAC* code, const std::string& instruc
 void handle_Mul(std::ostringstream& oss, TAC* code);
 void handle_Div(std::ostringstream& oss, TAC* code);
 void handle_Mod(std::ostringstream& oss, TAC* code);
+void handle_Shift(std::ostringstream& oss, TAC* code, bool toLeft);
 
 // --- Logic/Comparison Handlers ---
 void handle_Cmp(std::ostringstream& oss, TAC* code, const std::string& set_instruction);

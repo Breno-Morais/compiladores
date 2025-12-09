@@ -91,7 +91,7 @@ class ASTNode {
             }
 
         void print(const std::string& prefix = "", bool isLast = true) const;
-        std::string generateCode(int indent = 0) const;
+        std::string generateSourceCode(int indent = 0) const;
 };
 
 std::ostream& operator<<(std::ostream& out, const ASTNodeType& value);
