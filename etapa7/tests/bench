@@ -1,0 +1,25 @@
+// benchmark.lang
+int i = 0;
+int max = 2147483645; // 100 million iterations
+int x = 10;
+int result = 0;
+
+int main() {
+    while (i < max) {
+        // Operations to target Algebraic Identities
+        x = x + 0;
+        x = x * 1;
+        
+        // Both turns into shifts
+        x = x * 8;      
+        x = x / 2;      
+        
+        if (x > 1000) {
+            x = 10;
+        }
+        
+        i = i + 1;
+    }
+
+    print "Finished\n";
+}

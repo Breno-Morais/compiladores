@@ -66,6 +66,7 @@ TAC* createTAC(ASTNode* root, Symbol* funcContext = nullptr, int index = 0);
 // Otim
 void removeAllTacSymbols(TAC* eL);
 void removeDeadCode(TAC* eL);
+void removeRedundancy(TAC* eL);
 TAC* TACConstantFold(TAC* t);
 
 std::ostream& operator<<(std::ostream& out, const TACType& value);

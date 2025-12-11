@@ -1,0 +1,10 @@
+int x = 0;
+int main() {
+    
+    // This generates a useless jump
+    if (x < 10) {
+        // Empty block
+    }
+
+    print "Done";
+}

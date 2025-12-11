@@ -114,6 +114,7 @@ TAC* generateCode(ASTNode* root) {
     tacPrintList(result);
     for(TAC* cur = result; cur != nullptr; cur = cur->prev) {
         removeAllTacSymbols(cur);   
+        removeRedundancy(cur);
         removeDeadCode(cur);
     }
     std::cout << "\n\n";
@@ -311,6 +312,13 @@ void removeRedundancy(TAC* eL) {
 
     switch(eL->type) {
         case TACType::JUMP:
+            if(eL->next && eL->next->type == TACType::LABEL && eL->res == eL->next->res) {
+                tacRemove(eL);
+            }
+        
+            break;
+
+        case TACType::IFZ:
             if(eL->next && eL->next->type == TACType::LABEL && eL->res == eL->next->res) {
                 tacRemove(eL);
             }
